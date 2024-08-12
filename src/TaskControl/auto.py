@@ -53,11 +53,16 @@ class AutoBridge(object):
             self.all_auto_mode()
         elif mode.current_mod == 2:
             self.simple_mode()
+        elif mode.current_mod == 3:
+            self.simple_get_leave()
         else:
             self.test_mode()
 
     def simple_mode(self):
         self.simple_mission_task.start(None)
+
+    def simple_get_leave(self):
+        self.auto_leave_task.start(200)
 
     def test_mode(self):
         self.log(f"执行测试模式", emit=True)

@@ -273,7 +273,7 @@ def check_before_move(item):
         return False
     item_bucket_type_hash = get_item_bucketTypeHash_by_hash(item_hash)
 
-    if int(item_bucket_type_hash) not in CONST.ArmorBucketTypeHash:
+    if item_bucket_type_hash and int(item_bucket_type_hash) not in CONST.ArmorBucketTypeHash:
         if config.dim_settings.include_items and int(item_hash) not in config.dim_settings.include_items:
             # 武器 include 判断
             return False

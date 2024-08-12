@@ -23,9 +23,20 @@ class mission:
 @dataclasses.dataclass
 class other:
     use_dim: bool
-    check_box: tuple[int]
     rounds: int
     skill_rounds: int
+    start_use_leave: int
+
+
+@dataclasses.dataclass
+class leave_detect:
+    item_row_position: int
+    item_column_index: int
+    first_box_right_bottom: tuple[int]
+    box_edge: int
+    interval: int
+    check_box: tuple[int]
+    debug: bool
 
 
 @dataclasses.dataclass
@@ -38,3 +49,4 @@ settings = tomllib.loads(SETTINGS_PATH.read_text("utf-8"))
 mission_settings = mission(**settings.pop("mission"))
 other_settings = other(**settings.pop(f"other"))
 mode = mode(**settings.pop("mode"))
+leave_detect = leave_detect(**settings.pop("leave_detect"))

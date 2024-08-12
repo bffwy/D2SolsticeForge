@@ -73,6 +73,7 @@ key_chinese_2_en = {
     "打开任务": "ui_open_director_pursuits_tab",
     "打开设置": "ui_open_start_menu_settings_tab",
     "打开名单": "ui_open_director_roster_tab",
+    "打开物品栏": "ui_open_start_menu_inventory_tab",
     "按住放大": "hold_zoom",
     "切换到动能武器": "primary_weapon",
     "切换到能量武器": "special_weapon",
@@ -109,10 +110,27 @@ def get_d2_keybinds(k):
     return b
 
 
-bind_key_en = get_d2_keybinds(list(key_chinese_2_en.values()))
+real_use_key = {
+    "打开任务",
+    "向前移动",
+    "向后移动",
+    "返回轨道",
+    "切换冲刺",
+    "切换到威能武器",
+    "未充能近战",
+    "打开导航器",
+    "部署机灵",
+    "打开物品栏",
+}
+
+bind_key_en = get_d2_keybinds([key_chinese_2_en[key] for key in real_use_key])
 bind_key_chn = {key_en_2_chinese[k]: v for k, v in bind_key_en.items()}
 
 mouse_buttons = ["primary", "secondary", "middle", "XButton1", "XButton2"]
+
+for key, value in bind_key_en.items():
+    if not value:
+        raise Exception(f"需要绑定键: {key_en_2_chinese[key]}")
 
 
 def key_down(bind_name, click=False):
@@ -197,7 +215,6 @@ def active_window(match_string="Destiny 2"):
             # win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
             win32gui.BringWindowToTop(hwnd)
             ret = win32gui.GetWindowRect(hwnd)
-            print("pos", ret)
             window_x = ret[0]
             window_y = ret[1]
             break
@@ -233,8 +250,35 @@ def get_d2_pos(x, y):
     return window_x + x, window_y + y
 
 
+def get_d2_position(pos):
+    global window_x, window_y
+    if window_x is None:
+        init_window()
+    x, y = pos
+    return window_x + x, window_y + y
+
+
+def get_d2_box(box):
+    x, y, x1, y1 = box
+    x, y = get_d2_pos(x, y)
+    x1, y1 = get_d2_pos(x1, y1)
+    return x, y, x1, y1
+
+
 def back_2_d2_pos(x, y):
     global window_x, window_y
     if window_x is None:
         init_window()
     return x - window_x, y - window_y
+
+
+def d2_move(x, y):
+    x, y = get_d2_pos(x, y)
+    pydirectinput.moveTo(x, y)
+
+
+# print(back_2_d2_pos(1089, 653))
+# print(back_2_d2_pos(1025, 645))
+
+# d2 pos (109, 53, 2045, 1172)
+# 876, 335

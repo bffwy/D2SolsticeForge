@@ -16,6 +16,7 @@ from screenshot import get_screen_shot
 from collections import defaultdict
 from TaskControl.ActControl import do_actions
 from settings import mission_settings
+from utils import d2_operation
 
 next_page_button_pos = mission_settings.next_page_button_pos
 refresh_time = mission_settings.refresh_time
@@ -72,13 +73,13 @@ def get_current_page_mission():
 def refresh_mission(require_index):
     for i in require_index:
         y_pos = refresh_pos_y[i]
-        pydirectinput.moveTo(refresh_pos_x, y_pos)
+        d2_operation.d2_move(refresh_pos_x, y_pos)
         time.sleep(0.5)
         pydirectinput.mouseDown()
         time.sleep(3)
         pydirectinput.mouseUp()
     # 不要挡住图像识别
-    pydirectinput.moveTo(1, 1)
+    d2_operation.d2_move(x_range[1] + 100, refresh_pos_y[2] + 100)
     time.sleep(0.5)
 
 
@@ -99,7 +100,7 @@ def re_get_page_mission(page_index):
             get_mission_index[index] = True
 
             find_pos = find_index_and_pos[index][0]
-            pydirectinput.moveTo(*find_pos)
+            d2_operation.d2_move(*find_pos)
             time.sleep(0.5)
             pydirectinput.click()
             time.sleep(0.5)
@@ -119,7 +120,7 @@ def get_mission():
     time.sleep(2)
     use_leave = re_get_page_mission(0)
     time.sleep(1)
-    pydirectinput.moveTo(*next_page_button_pos)
+    d2_operation.d2_move(*next_page_button_pos)
     time.sleep(0.5)
     pydirectinput.click()
     time.sleep(1)
@@ -134,5 +135,8 @@ def get_mission():
 # from utils import d2_operation
 
 # d2_operation.active_window()
-# time.sleep(2)
-# print(re_get_page_mission(1))
+# # time.sleep(2)
+# print(get_mission())
+
+# print(re_get_page_mission(0))
+# print(get_current_page_mission())

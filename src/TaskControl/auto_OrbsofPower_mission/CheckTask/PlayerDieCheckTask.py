@@ -17,7 +17,7 @@ class PlayerDieCheckTask(CheckTaskBase):
     def check_player_die(self):
         if self.finish_check:
             return
-        check_die_mask_ratio = get_similarity(self.check_image, self.check_box, self.base_on_2560, self.debug)
+        check_die_mask_ratio = get_similarity(self.check_image, self.check_box, self.debug)
         if check_die_mask_ratio >= self.die_check_similarity:
             self.trigger()
             return

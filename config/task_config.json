@@ -5,13 +5,12 @@
         "reborn_time_out": 30,
         "_comment": "检测玩家重生, check_similarity 表示相似度（以下一样），check_interval 表示检测间隔（以下一样），reborn_time_out 表示玩家重生超时时间",
         "check_box": [
-            81,
-            341,
+            70,
             280,
-            387
+            218,
+            321
         ],
         "check_image": "reborn_lw2",
-        "base_on_2560": true,
         "debug": false
     },
     "PlayerDieCheckTask": {
@@ -19,13 +18,12 @@
         "check_interval": 0.5,
         "check_time_out": 120,
         "check_box": [
-            0,
-            60,
-            610,
-            240
+            64,
+            77,
+            468,
+            211
         ],
-        "check_image": "check_die_new",
-        "base_on_2560": true,
+        "check_image": "check_die",
         "debug": false,
         "_comment": "检测玩家死亡"
     },
@@ -35,13 +33,12 @@
         "check_time_out": 70,
         "_comment": "检测悬赏任务完成",
         "check_box": [
-            2335,
-            400,
-            2454,
-            435
+            1756,
+            327,
+            1851,
+            356
         ],
         "check_image": "finish_mission",
-        "base_on_2560": true,
         "debug": false
     },
     "CheckFinishPM": {
@@ -51,13 +48,12 @@
         "round_time": 60,
         "_comment": "检测PM完成",
         "check_box": [
-            125,
-            15,
-            540,
-            145
+            104,
+            42,
+            417,
+            136
         ],
         "check_image": "finish_pm",
-        "base_on_2560": true,
         "debug": false
     },
     "CheckBackToOrbit": {
@@ -66,13 +62,12 @@
         "check_time_out": 30,
         "_comment": "检测在轨道上",
         "check_box": [
-            90,
-            1387,
-            180,
-            1420
+            72,
+            1063,
+            147,
+            1100
         ],
-        "check_image": "orbit",
-        "base_on_2560": true,
+        "check_image": "in_orbit",
         "debug": false
     },
     "EnterPMTask": {
@@ -81,13 +76,12 @@
         "check_similarity": 0.7,
         "check_interval": 1,
         "check_box": [
-            1130,
-            93,
-            1430,
-            155
+            855,
+            97,
+            1083,
+            151
         ],
         "check_image": "enter_pm_map",
-        "base_on_2560": true,
         "debug": false,
         "_comment": "检测进图， enter_map_time是进图飞的时间， check_time_out是进图之后的检测超时时间"
     },
@@ -97,13 +91,12 @@
         "check_similarity": 0.7,
         "check_interval": 1,
         "check_box": [
-            81,
-            341,
+            70,
             280,
-            387
+            218,
+            321
         ],
         "check_image": "reborn_lw2",
-        "base_on_2560": true,
         "debug": false,
         "_comment": "检测进图， enter_map_time是进图飞的时间， check_time_out是进图之后的检测超时时间"
     }

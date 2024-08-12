@@ -1,20 +1,29 @@
 [mission]
-next_page_button_pos = [1925, 800] # 锻炉 下一页按钮 位置
+next_page_button_pos = [1451, 663] # 锻炉 下一页按钮 位置
 refresh_time = 5 #刷新悬赏次数 （眉笔机制）
-refresh_pos_x = 320 # 刷新悬赏的横坐标
-refresh_pos_y =  [595, 835, 1080] # 刷新悬赏的纵坐标
-x_range =  [250, 800]  # 悬赏的横坐标范围
-min_radius = 24 # 检查能量球悬赏圆的最小半径
-max_radius = 28 # 检查能量球悬赏圆的最大半径
-y_diff = 15 # 检查到的 y 的误差范围  刷新悬赏的纵坐标pos - y_diff <= 检查y坐标 <= 刷新悬赏的纵坐标pospos + y_diff
+refresh_pos_x = 248 # 刷新悬赏的横坐标
+refresh_pos_y =  [480, 663, 846] # 刷新悬赏的纵坐标
+x_range =  [248, 602]  # 悬赏的横坐标范围
+min_radius = 18 # 检查能量球悬赏圆的最小半径
+max_radius = 22 # 检查能量球悬赏圆的最大半径
+y_diff = 20 # 检查到的 y 的误差范围  刷新悬赏的纵坐标pos - y_diff <= 检查y坐标 <= 刷新悬赏的纵坐标pospos + y_diff
 
+[leave_detect]
+item_row_position  = 4 # 物品栏的第几行 填 1- 5
+item_column_index  = 1 # 物品栏的第几列  填 1-10
+
+first_box_right_bottom = [283, 438] # 物品栏第一个物品的右小角坐标 可以调整 x, y 的坐标让截图准确一点
+box_edge = 96 # 物品栏每个格子的大小
+interval = 7# 物品栏之间的间隔
+check_box = [40, 30] # 数字截图的大小
+debug = true # 是否显示截图,截图会保存在debug目录
 
 [other]
-use_dim = true
-check_box = [1880, 1152, 1950, 1184] # 检测银叶数量的框
+use_dim = false
 rounds = 100 # 每次刷多少场
 skill_rounds = 25 # 产球的技能循环次数
+start_use_leave = 100 # 开始时,超过这个数量就去遗愿用,小于就去PM刷
 
 [mode]
-current_mod = 1 # 1: 全自动(刷银叶 + 用银叶) 2:kf 练功房用银叶 3: 测试行为
+current_mod = 1 # 1: 全自动(刷银叶 + 用银叶) 2:kf 练功房用银叶 3：pm刷银叶 4: 测试行为
 test_act = "" # 在config/act里面 的文件名，不带 .json

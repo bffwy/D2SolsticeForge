@@ -19,7 +19,7 @@ class CheckMissionFinishTask(CheckTaskBase):
     def check_reborn_tag(self):
         if self.finish_check:
             return
-        mask_ratio = get_similarity(self.check_image, self.check_box, self.base_on_2560, self.debug)
+        mask_ratio = get_similarity(self.check_image, self.check_box, self.debug)
         if mask_ratio >= self.check_similarity:
             self.event.data = {"check": True}
             self.trigger()

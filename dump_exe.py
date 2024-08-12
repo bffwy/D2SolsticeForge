@@ -1,16 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from PyInstaller.utils.hooks import collect_data_files
-from ultralytics import YOLO
+import ddddocr
 
-ultra_files = collect_data_files("ultralytics")
+ultra_files = collect_data_files("ddddocr")
 
 a = Analysis(
-    ["src\\run.py"],
+    ["D:/Work/git_work_space/d2-auto-work/src/run.py"],
     pathex=[],
     binaries=[],
     datas=ultra_files,
-    hiddenimports=["ultralytics"],
+    hiddenimports=["ddddocr"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

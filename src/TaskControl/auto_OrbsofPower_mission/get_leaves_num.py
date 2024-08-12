@@ -11,15 +11,33 @@ import io
 import ddddocr
 from D2API.api import get_item_quantity, get_profile_inventory
 from TaskControl.Base.TimerManager import TimerManager
-from TaskControl.ActControl import do_actions
+from TaskControl.ActControl import do_actions, esc_once
 from screenshot import grab_image
-from settings import other_settings
+from settings import other_settings, leave_detect
+from utils import d2_operation, path_helper
 
 use_dim = other_settings.use_dim
 update_interval = 5 * 60
 LEAVES_ITEM_HASH = 1644922223
 
-bbox = other_settings.check_box
+
+def get_check_bbox():
+    item_row_position = leave_detect.item_row_position
+    item_column_index = leave_detect.item_column_index
+
+    end_pos = leave_detect.first_box_right_bottom
+    bbox_edge = leave_detect.box_edge
+    interval = leave_detect.interval
+    check_box_range = leave_detect.check_box
+
+    real_end_height = end_pos[1] + ((bbox_edge + interval) * (item_row_position - 1))
+    real_end_width = end_pos[0] + ((bbox_edge + interval) * (item_column_index - 1))
+
+    x = real_end_width - check_box_range[0]
+    y = real_end_height - check_box_range[1]
+
+    return d2_operation.get_d2_box([x, y, real_end_width, real_end_height])
+
 
 ocr = ddddocr.DdddOcr()
 
@@ -36,22 +54,27 @@ if use_dim and False:
 def get_leaves_item_quantity():
     if use_dim and False:
         return get_item_quantity(LEAVES_ITEM_HASH)
-    do_actions("定位到有银叶数量界面")
+    d2_operation.key_down_chn("打开物品栏", click=True)
+    time.sleep(1.5)
+    bbox = get_check_bbox()
     image = grab_image(bbox=bbox)
+    if leave_detect.debug:
+        time_str = time.strftime("%Y-%m-%d_%H-%M-%S")
+        file_name = f"{time_str}_银叶检测.png"
+        save_path = path_helper.get_debug(file_name)
+        image.save(save_path)
     image_bytes = io.BytesIO()
     image.save(image_bytes, format="PNG")
     result = ocr.classification(image_bytes.getvalue())
-    do_actions("回退到检测前界面")
     time.sleep(1)
-
+    esc_once()
     try:
         return int(result)
     except Exception:
-        return 0
+        pass
 
+    return 0
 
-# from utils import d2_operation
 
 # d2_operation.active_window()
-
 # print(get_leaves_item_quantity())

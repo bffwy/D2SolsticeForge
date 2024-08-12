@@ -25,6 +25,14 @@ def get_resource(file_path):
     return get_real_path(file_path, "resource")
 
 
+def get_debug(file_path):
+    debug_dir = get_real_path("", "debug")
+    if not os.path.exists(debug_dir):
+        os.makedirs(debug_dir, exist_ok=True)
+    path = get_real_path(file_path, "debug")
+    return path
+
+
 def get_log(file_path):
     path = get_real_path(file_path, "logs")
     if not os.path.exists(path):

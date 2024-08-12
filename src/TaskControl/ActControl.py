@@ -13,7 +13,7 @@ from utils import path_helper
 from utils import d2_operation
 from utils.patterns import Singleton
 from TaskControl.Base.CommonLogger import my_logger
-from screenshot import replace_coordinates
+from my_window.MainWindow import log_window
 
 pydirectinput.PAUSE = 0
 
@@ -66,18 +66,11 @@ def execute_action(action):
             pydirectinput.move(*action["relative"], relative=True)
         elif action.get("absolute"):
             pos = action["absolute"]
-            if action.get("base_on_2560"):
-                pos = replace_coordinates(pos)
+            pos = d2_operation.get_d2_position(pos)
             pydirectinput.moveTo(*pos)
 
     elif action["type"] == "wait":
         time.sleep(action["duration"])
-
-    elif action["type"] == "click":
-        pos = action["absolute"]
-        if action.get("base_on_2560"):
-            pos = replace_coordinates(pos)
-        pydirectinput.click(*pos)
 
     elif action["type"] == "leftClick":
         pydirectinput.click(button="left")
@@ -109,14 +102,29 @@ def do_actions(action_name):
     if config is None:
         my_logger.info(f"actions NotFound: {action_name}")
         raise Exception(f"actions NotFound: {action_name}")
+    log_window.emit_log(f"开始执行act {action_name}")
     _actions(config)
-    my_logger.info(f"actions Done: {action_name}")
+    log_window.emit_log(f"执行结束act {action_name}")
 
 
 def esc_once():
     pydirectinput.press("esc")
     time.sleep(1)
 
+
+used_action = set()
+for action_name in ConfigManager().action_map:
+    actions = ConfigManager().get_config(action_name)
+    for action in actions["actions"]:
+        if action.get("type") == "press":
+            key = action["key"]
+            used_action.add(key)
+
+        elif action.get("type") == "key":
+            key = action["name"]
+            used_action.add(key)
+
+print(used_action)
 
 # d2_operation.active_window()
 # time.sleep(2)

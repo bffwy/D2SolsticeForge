@@ -37,6 +37,6 @@ if __name__ == "__main__":
         new_task.stop()
 
 
-# pipenv run pyinstaller --noconfirm --onedir --console --clean "D:/Work/remake/src/run.py"
-# pipenv run pyinstaller --noconfirm --onedir --console --debug "all" --clean "D:/Work/remake/src/run.py"
+# pipenv run pyinstaller --noconfirm --onedir --console --clean "D:/Work/git_work_space/d2-auto-work/src/run.py"
+# pipenv run pyinstaller --noconfirm --onedir --console --debug "all" --clean "D:/Work/git_work_space/d2-auto-work/src/run.py"
 # pipenv run pyinstaller .\run.spec --noconfir

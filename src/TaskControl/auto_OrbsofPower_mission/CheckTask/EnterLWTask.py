@@ -27,7 +27,7 @@ class EnterLWTask(CheckTaskBase):
         self.real_check_load_map()
 
     def real_check_load_map(self):
-        x = get_similarity(self.check_image, self.check_box, self.base_on_2560, self.debug)
+        x = get_similarity(self.check_image, self.check_box, self.debug)
         if x >= self.check_similarity:
             my_logger.info(f"real_check_load_map finish similarity={x}")
             self.trigger()

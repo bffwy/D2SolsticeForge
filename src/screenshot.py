@@ -87,12 +87,13 @@ def get_mask_ratio(image: np.ndarray, lower_bound: np.ndarray, upper_bound: np.n
     return np.sum(mask == 255) / (image.size / 3)
 
 
-@decorator.timer_log
+# @decorator.timer_log
 def grab_image(bbox):
     return ImageGrab.grab(bbox=bbox)
 
 
 def get_path_by_screen_size(path):
+    return f"./asset/{path}.png"
     MONITOR_WIDTH, MONITOR_HEIGHT = ImageGrab.grab().size
     return f"./asset/{path}_{MONITOR_WIDTH}.png"
 
@@ -125,21 +126,16 @@ def replace_coordinates(bbox):
     ]
 
 
-def get_similarity(path, bbox, base_on_2560, debug):
+def get_similarity(path, bbox, debug):
     real_path = get_path_by_screen_size(path)
     if not os.path.exists(real_path):
         raise Exception(f"{real_path} 不存在, 影响到正常功能")
     image_cv = load_image_cv(real_path)
     # image_raw = load_image_raw(real_path)
     ori_box = bbox.copy()
-    if base_on_2560:
-        bbox = replace_coordinates(bbox)
-    if not check_bbox(bbox):
-        raise Exception(f"{ori_box}: bbox 不合法")
-
+    bbox = d2_operation.get_d2_box(ori_box)
     grabbed_image = grab_image(bbox)
     ret = get_template_similarity(grabbed_image, image_cv)
-
     if debug:
         time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
         file_name = f"{path}_{time_str}_相似度{ret:.2f}.png"
@@ -147,7 +143,7 @@ def get_similarity(path, bbox, base_on_2560, debug):
         if not os.path.exists("./debug"):
             os.makedirs("./debug")
         grabbed_image.save(f"./debug/{file_name}")
-
+    logger.debug(f"check_path: {path} 相似度: {ret:.2f}")
     return ret
 
 
@@ -208,6 +204,8 @@ def get_image_box():
 
 
 def get_screen_shot(bbox=None):
+    if bbox is None:
+        bbox = d2_operation.get_d2_box([0, 0, 1920, 1080])
     screenshot = grab_image(bbox)
     image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
     return image
@@ -230,5 +228,5 @@ def get_screen_shot(bbox=None):
 
 # bbox = [181, 1116, 256, 1153]
 
-bbox = [213, 95, 526, 189]
-test_get_image(bbox)
+# bbox = [213, 95, 526, 189]
+# test_get_image(bbox)
