@@ -1,0 +1,20 @@
+[mission]
+next_page_button_pos = [1925, 800] # 锻炉 下一页按钮 位置
+refresh_time = 5 #刷新悬赏次数 （眉笔机制）
+refresh_pos_x = 320 # 刷新悬赏的横坐标
+refresh_pos_y =  [595, 835, 1080] # 刷新悬赏的纵坐标
+x_range =  [250, 800]  # 悬赏的横坐标范围
+min_radius = 24 # 检查能量球悬赏圆的最小半径
+max_radius = 28 # 检查能量球悬赏圆的最大半径
+y_diff = 15 # 检查到的 y 的误差范围  刷新悬赏的纵坐标pos - y_diff <= 检查y坐标 <= 刷新悬赏的纵坐标pospos + y_diff
+
+
+[other]
+use_dim = true
+check_box = [1880, 1152, 1950, 1184] # 检测银叶数量的框
+rounds = 100 # 每次刷多少场
+skill_rounds = 25 # 产球的技能循环次数
+
+[mode]
+current_mod = 1 # 1: 全自动(刷银叶 + 用银叶) 2:kf 练功房用银叶 3: 测试行为
+test_act = "" # 在config/act里面 的文件名，不带 .json

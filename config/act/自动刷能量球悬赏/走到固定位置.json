@@ -1,0 +1,78 @@
+{
+    "actions": [
+        {
+            "type": "mouse_move",
+            "relative": [
+                200,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "注释": "按住 shift",
+            "type": "key",
+            "name": "切换冲刺",
+            "duration": 4.5,
+            "blocking": false
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向前移动",
+            "duration": 4.5,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                1000,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.2,
+            "blocking": true
+        },
+        {
+            "注释": "按住 shift",
+            "type": "key",
+            "name": "切换冲刺",
+            "duration": 2,
+            "blocking": false
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向前移动",
+            "duration": 2,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                -2500,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 8,
+            "blocking": true
+        }
+    ]
+}

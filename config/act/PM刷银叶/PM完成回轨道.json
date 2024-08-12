@@ -1,0 +1,11 @@
+{
+    "actions": [
+        {
+            "注释": "返回轨道t",
+            "type": "key",
+            "name": "返回轨道",
+            "duration": 4.5,
+            "blocking": true
+        }
+    ]
+}

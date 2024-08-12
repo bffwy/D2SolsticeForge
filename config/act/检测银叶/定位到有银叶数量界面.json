@@ -1,0 +1,50 @@
+{
+    "actions": [
+        {
+            "注释": "打开任务",
+            "type": "press",
+            "key": "打开任务"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "注释": "下一页",
+            "type": "press",
+            "key": "向后移动"
+        },
+        {
+            "type": "wait",
+            "duration": 1.5,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                1230,
+                850
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                1230,
+                750
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1.5,
+            "blocking": true
+        }
+    ]
+}

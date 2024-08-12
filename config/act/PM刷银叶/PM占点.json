@@ -1,0 +1,54 @@
+{
+    "actions": [
+        {
+            "注释": "按住 shift",
+            "type": "key",
+            "name": "切换冲刺",
+            "duration": 4.8,
+            "blocking": false
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向前移动",
+            "duration": 4.8,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                1300,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.2,
+            "blocking": true
+        },
+        {
+            "注释": "按住 shift",
+            "type": "key",
+            "name": "切换冲刺",
+            "duration": 2,
+            "blocking": false
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向前移动",
+            "duration": 2,
+            "blocking": true
+        }
+    ]
+}

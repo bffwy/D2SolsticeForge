@@ -1,0 +1,20 @@
+[[source]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+verify_ssl = true
+name = "pip_conf_index_global"
+
+[packages]
+loguru = "*"
+pydirectinput = "*"
+opencv-python = "*"
+pillow = "*"
+pyinstaller = "*"
+lapx = "*"
+pyqt5 = "*"
+pywin32 = "*"
+requests = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

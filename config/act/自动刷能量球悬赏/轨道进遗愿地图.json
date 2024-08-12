@@ -1,0 +1,85 @@
+{
+    "actions": [
+        {
+            "type": "press",
+            "key": "打开导航器"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "注释": "选择幽梦之城",
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                2130,
+                600
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1.5,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                -100,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "注释": "选择遗愿图标",
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                740,
+                20
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                2180,
+                1210
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        }
+    ]
+}

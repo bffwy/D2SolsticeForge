@@ -1,0 +1,29 @@
+{
+    "actions": [
+        {
+            "注释": "切3号位武器自杀",
+            "type": "press",
+            "key": "切换到威能武器"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                0,
+                800
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.5,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        }
+    ]
+}
