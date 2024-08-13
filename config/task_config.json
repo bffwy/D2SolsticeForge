@@ -54,7 +54,7 @@
             136
         ],
         "check_image": "finish_pm",
-        "debug": false
+        "debug": true
     },
     "CheckBackToOrbit": {
         "check_similarity": 0.8,

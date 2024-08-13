@@ -54,9 +54,11 @@ if use_dim and False:
 def get_leaves_item_quantity():
     if use_dim and False:
         return get_item_quantity(LEAVES_ITEM_HASH)
-    d2_operation.key_down_chn("打开物品栏", click=True)
-    time.sleep(1.5)
-    bbox = get_check_bbox()
+    # d2_operation.key_down_chn("打开物品栏", click=True)
+    do_actions("定位到有银叶数量界面")
+    # bbox = get_check_bbox()
+    pos = [1415, 864, 1475, 890]
+    bbox = d2_operation.get_d2_box(pos)
     image = grab_image(bbox=bbox)
     if leave_detect.debug:
         time_str = time.strftime("%Y-%m-%d_%H-%M-%S")
@@ -67,7 +69,8 @@ def get_leaves_item_quantity():
     image.save(image_bytes, format="PNG")
     result = ocr.classification(image_bytes.getvalue())
     time.sleep(1)
-    esc_once()
+    do_actions("回退到检测前界面")
+    # esc_once()
     try:
         return int(result)
     except Exception:
@@ -76,5 +79,5 @@ def get_leaves_item_quantity():
     return 0
 
 
-# d2_operation.active_window()
-# print(get_leaves_item_quantity())
+d2_operation.active_window()
+print(get_leaves_item_quantity())

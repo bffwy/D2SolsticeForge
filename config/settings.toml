@@ -16,12 +16,12 @@ first_box_right_bottom = [283, 438] # 物品栏第一个物品的右小角坐标
 box_edge = 96 # 物品栏每个格子的大小
 interval = 7# 物品栏之间的间隔
 check_box = [40, 30] # 数字截图的大小
-debug = true # 是否显示截图,截图会保存在debug目录
+debug = false # 是否显示截图,截图会保存在debug目录
 
 [other]
-use_dim = false
-rounds = 100 # 每次刷多少场
-skill_rounds = 25 # 产球的技能循环次数
+use_dim = true
+rounds = 50 # 每次刷多少场
+skill_rounds = 26 # 产球的技能循环次数
 start_use_leave = 100 # 开始时,超过这个数量就去遗愿用,小于就去PM刷
 
 [mode]

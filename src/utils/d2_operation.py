@@ -277,8 +277,8 @@ def d2_move(x, y):
     pydirectinput.moveTo(x, y)
 
 
-# print(back_2_d2_pos(1089, 653))
-# print(back_2_d2_pos(1025, 645))
+# print(back_2_d2_pos(1486, 902))
+# print(back_2_d2_pos(1536, 931))
 
 # d2 pos (109, 53, 2045, 1172)
 # 876, 335

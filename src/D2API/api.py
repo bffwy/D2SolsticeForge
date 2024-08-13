@@ -209,6 +209,11 @@ def pull_item_from_postmaster(item, character_id):
     data = json.dumps(payload)
     r = requests.post(CONST.URL_BASE + api_path, headers=COMMON_HEADERS, data=data)
     print(f"PullFromPostmaster:{item_id}")
+    logger.info(f"PullFromPostmaster item_id={item_id} ret={r.status_code}")
+
+    if r.status_code != 200:
+        logger.info(f"PullFromPostmaster item_id={item_id} res={r.json()}")
+
     if r.status_code == 200:
         return True
 
@@ -272,14 +277,24 @@ def check_before_move(item):
         # 拜龙教镰刀 弓箭
         return False
     item_bucket_type_hash = get_item_bucketTypeHash_by_hash(item_hash)
-
+    print("include:", config.dim_settings.include_items)
     if item_bucket_type_hash and int(item_bucket_type_hash) not in CONST.ArmorBucketTypeHash:
+        print(f"item_hash: {item_hash}")
         if config.dim_settings.include_items and int(item_hash) not in config.dim_settings.include_items:
             # 武器 include 判断
             return False
         return True
 
     item_data = get_item_common_data(item_id)
+    stats_data = item_data["stats"]["data"]["stats"]
+    count = 0
+    hash_value_mal = {}
+    for statHush, hash_value in stats_data.items():
+        value = hash_value["value"]
+        hash_value_mal[statHush] = value
+        count += int(value)
+    print(f"stats: {count}")
+    return count >= config.dim_settings.armor_sum_required
 
     if item_data:
         try:
@@ -312,11 +327,12 @@ def real_move_items_from_postmaster_to_vault():
         if not items:
             return
         for item in items:
+            dim_pull_item_from_postmaster(item, character_id)
 
-            try:
-                dim_pull_item_from_postmaster(item, character_id)
-            except Exception as e:
-                continue
+            # try:
+            #     dim_pull_item_from_postmaster(item, character_id)
+            # except Exception as e:
+            #     continue
 
     check_and_refresh_token()
     get_characters()
