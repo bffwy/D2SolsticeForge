@@ -1,0 +1,1 @@
+{"actions": [{"注释": "开始", "type": "mouse_move", "absolute": [1094, 623]}, {"type": "wait", "duration": 1.0, "blocking": true}, {"type": "leftClick"}]}

@@ -4,11 +4,13 @@ import threading
 import pydirectinput
 import os
 import sys
+from copy import deepcopy
 
 parent_dir_name = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(parent_dir_name)
 sys.path.append(os.path.dirname(parent_dir_name))
 
+from settings import mode
 from utils import path_helper
 from utils import d2_operation
 from utils.patterns import Singleton
@@ -64,6 +66,7 @@ def execute_action(action):
     elif action["type"] == "mouse_move":
         if action.get("relative"):
             pydirectinput.move(*action["relative"], relative=True)
+
         elif action.get("absolute"):
             pos = action["absolute"]
             pos = d2_operation.get_d2_position(pos)
@@ -98,13 +101,16 @@ def _actions(config):
 
 
 def do_actions(action_name):
+    if mode.is_1280_resolution:
+        action_name = f"{action_name}_1280"
     config = ConfigManager().get_config(action_name)
     if config is None:
         my_logger.info(f"actions NotFound: {action_name}")
         raise Exception(f"actions NotFound: {action_name}")
+    my_logger.info(f"开始执行act {action_name}")
     log_window.emit_log(f"开始执行act {action_name}")
     _actions(config)
-    log_window.emit_log(f"执行结束act {action_name}")
+    # log_window.emit_log(f"执行结束act {action_name}")
 
 
 def esc_once():
@@ -112,21 +118,54 @@ def esc_once():
     time.sleep(1)
 
 
-used_action = set()
-for action_name in ConfigManager().action_map:
-    actions = ConfigManager().get_config(action_name)
-    for action in actions["actions"]:
-        if action.get("type") == "press":
-            key = action["key"]
-            used_action.add(key)
+def convert_coordinates(original_coordinates):
+    # 使用示例
+    original_resolution = [1920, 1080]
+    new_resolution = [1280, 720]
 
-        elif action.get("type") == "key":
-            key = action["name"]
-            used_action.add(key)
+    # 计算缩放比例
+    scale = [new / original for new, original in zip(new_resolution, original_resolution)]
+    # 转换坐标
+    new_coordinates = [int(original * scale) for original, scale in zip(original_coordinates, scale)]
+    return new_coordinates
 
-print(used_action)
+
+# used_action = set()
+# for action_name, file_path in ConfigManager().action_map.items():
+#     actions = ConfigManager().get_config(action_name)
+#     copy_action = deepcopy(actions)
+#     for action in copy_action["actions"]:
+#         if "absolute" in action:
+#             pos = action["absolute"]
+#             new_coordinates = convert_coordinates(pos)
+#             action["absolute"] = new_coordinates
+#     # 生成新的文件路径
+#     base, ext = os.path.splitext(file_path)
+#     new_file_path = f"{base}_1280{ext}"
+
+#     # 将copy_action保存到新的文件中
+#     with open(new_file_path, "w", encoding="utf-8") as f:
+#         json.dump(copy_action, f, ensure_ascii=False)
+
+#     key = action["key"]
+#     used_action.add(key)
+
+# elif action.get("type") == "key":
+#     key = action["name"]
+#     used_action.add(key)
+
+# print(used_action)
 
 # d2_operation.active_window()
-# time.sleep(2)
-# do_actions("轨道开启PM第一次")
+# do_actions("PM占点")
+
+
+# # time.sleep(1)
+# do_actions("技能循环")
 # # do_actions("PM占点")
+# do_actions("走到固定位置")
+# times = 5
+# while times > 0:
+#     times -= 1
+#     do_actions("技能循环")
+# do_actions("3号位武器自杀")

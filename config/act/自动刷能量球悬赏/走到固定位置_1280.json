@@ -65,25 +65,57 @@
         {
             "type": "mouse_move",
             "relative": [
-                -2600,
+                -500,
                 0
             ]
         },
         {
-            "注释": "选择私人比赛",
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
             "type": "mouse_move",
-            "absolute": [
-                100,
-                50
+            "relative": [
+                -500,
+                0
             ]
         },
         {
             "type": "wait",
-            "duration": 0.5,
+            "duration": 0.01,
             "blocking": true
         },
         {
-            "type": "leftClick"
+            "type": "mouse_move",
+            "relative": [
+                -500,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                -500,
+                0
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                -500,
+                0
+            ]
         },
         {
             "type": "wait",

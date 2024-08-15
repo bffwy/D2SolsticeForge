@@ -1,0 +1,1 @@
+{"actions": [{"注释": "打开任务", "type": "press", "key": "打开任务"}, {"type": "wait", "duration": 1, "blocking": true}, {"注释": "下一页", "type": "press", "key": "向后移动"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "mouse_move", "absolute": [373, 398]}, {"type": "wait", "duration": 0.5, "blocking": true}, {"type": "rightClick"}]}

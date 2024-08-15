@@ -1,8 +1,5 @@
 import asyncio
-import time
 from queue import Queue
-from TaskControl.Base.BaseTask import Task, Event
-from TaskControl.Base.TimerManager import TimerManager
 from TaskControl.Base.CommonLogger import my_logger
 from my_window.MainWindow import log_window
 from TaskControl.ActControl import do_actions
@@ -14,6 +11,7 @@ from TaskControl.auto_OrbsofPower_mission.get_leaves_num import get_leaves_item_
 from TaskControl.auto_OrbsofPower_mission.get_bounty_mission import get_mission
 from settings import other_settings, mode
 from utils import path_helper, d2_operation
+from TaskControl.status_check import StatusControl
 
 
 pm_round = other_settings.rounds
@@ -25,7 +23,14 @@ class AutoBridge(object):
         self.auto_leave_task = GenLeaveTask(finish_Callback=self.on_auto_leave_finish)
         self.use_leave_task = AutoPowerMissionTask(finish_Callback=self.on_use_leave_finish)
         self.simple_mission_task = SimpleMissionTask()
+        self.status_control = StatusControl(finish_Callback=self.on_status_check)
         self.event_queue = Queue()
+
+    def on_status_check(self):
+        self.event_queue.queue.clear()
+        self.stop()
+        self.status_control.get_back_to_orbit()
+        self.event_queue.put((self.real_start, None))
 
     def init_task(self, task_class, event_handler=None):
         task = task_class(self.event_queue)
@@ -55,8 +60,24 @@ class AutoBridge(object):
             self.simple_mode()
         elif mode.current_mod == 3:
             self.simple_get_leave()
-        else:
+        elif mode.current_mod == 4:
             self.test_mode()
+        elif mode.current_mod == 5:
+            self.lw_mod()
+        elif mode.current_mod == 6:
+            self.check_leave()
+        elif mode.current_mod == 7:
+            self.check_get_mission()
+
+    def check_get_mission(self):
+        get_mission()
+
+    def check_leave(self):
+        current_leave = get_leaves_item_quantity()
+        self.log(f"检测到银叶数量 {current_leave}", emit=True)
+
+    def lw_mod(self):
+        self.use_leave_task.start(None)
 
     def simple_mode(self):
         self.simple_mission_task.start(None)
@@ -71,13 +92,19 @@ class AutoBridge(object):
         do_actions(test_act)
         self.log(f"测试结束", emit=True)
 
+    def get_round(self, current_leave):
+        if pm_round * 5 + current_leave <= 999:
+            return pm_round
+        return int((999 - current_leave) // 5)
+
     def all_auto_mode(self):
+        self.status_control.start()
         current_leave = get_leaves_item_quantity()
         self.log(f"检测到银叶数量 {current_leave}", emit=True)
-        if current_leave > 100:
+        if current_leave > other_settings.start_use_leave:
             self.use_leave_task.start(current_leave)
         else:
-            self.auto_leave_task.start(pm_round)
+            self.auto_leave_task.start(self.get_round(current_leave))
 
     async def check_queue(self):
         # 让主函数一直循环
@@ -93,7 +120,9 @@ class AutoBridge(object):
         self.use_leave_task.start(None)
 
     def on_use_leave_finish(self):
-        self.auto_leave_task.start(pm_round)
+        current_leave = get_leaves_item_quantity()
+        self.log(f"检测到银叶数量 {current_leave}", emit=True)
+        self.auto_leave_task.start(self.get_round(current_leave))
 
     def stop(self):
         self.use_leave_task.stop_all_checks()

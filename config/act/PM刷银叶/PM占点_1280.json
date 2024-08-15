@@ -1,0 +1,35 @@
+{
+    "actions": [
+        {
+            "注释": "按住 shift",
+            "type": "key",
+            "name": "切换冲刺",
+            "duration": 4.8,
+            "blocking": false
+        },
+        {
+            "type": "wait",
+            "duration": 0.01,
+            "blocking": true
+        },
+        {
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向前移动",
+            "duration": 4.8,
+            "blocking": true
+        },
+        {
+            "type": "wait",
+            "duration": 0.2,
+            "blocking": true
+        },
+        {
+            "注释": "按住 d 往前跑",
+            "type": "key",
+            "name": "向右移动",
+            "duration": 3,
+            "blocking": true
+        }
+    ]
+}

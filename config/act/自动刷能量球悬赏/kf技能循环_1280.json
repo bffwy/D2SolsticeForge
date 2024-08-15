@@ -4,18 +4,18 @@
             "注释": "按住 w 往前跑",
             "type": "key",
             "name": "向后移动",
-            "duration": 0.3,
+            "duration": 1,
             "blocking": false
-        },
-        {
-            "注释": "未充能近战",
-            "type": "press",
-            "key": "未充能近战"
         },
         {
             "type": "wait",
             "duration": 1,
             "blocking": true
+        },
+        {
+            "注释": "未充能近战",
+            "type": "press",
+            "key": "未充能近战"
         }
     ]
 }

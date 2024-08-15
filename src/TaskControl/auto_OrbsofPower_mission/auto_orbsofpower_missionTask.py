@@ -170,7 +170,7 @@ class AutoPowerMissionTask(object):
     def get_new_mission(self):
         use_leave = get_mission()
         self.current_leave -= use_leave
-        if self.current_leave < 0:
+        if self.current_leave < other_settings.leave_leaf:
             self.goal_finish = True
 
     def update_main_task(self):
@@ -194,7 +194,7 @@ class AutoPowerMissionTask(object):
         while times > 0:
             times -= 1
             do_actions("技能循环")
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.1)
         do_actions("3号位武器自杀")
 
     def on_player_die(self, event: Event):

@@ -64,7 +64,7 @@ class GenLeaveTask(object):
         return task
 
     def start(self, rounds):
-        self.log(f"开始刷银叶", emit=True)
+        self.log(f"开始刷银叶 {rounds} 场", emit=True)
         self.goal_finish = False
         self.data.re_init()
         self.rounds = rounds

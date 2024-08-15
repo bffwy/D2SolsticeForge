@@ -42,3 +42,16 @@ def get_log(file_path):
         with open(path, "w") as f:
             pass
     return path
+
+
+# import sys
+# import os
+
+# if getattr(sys, 'frozen', False):
+#     # 如果程序被打包
+#     base_path = sys._MEIPASS
+# else:
+#     # 如果程序没有被打包
+#     base_path = os.path.dirname(__file__)
+
+# asset_path = os.path.join(base_path, 'asset')

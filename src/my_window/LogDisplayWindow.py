@@ -129,21 +129,24 @@ class DisplayWindow(QDockWidget):
     def addComment(self, bool, msg):
         """
         这里必须在主线程里添加，否则显示会延迟，但消息多时可能会导致窗口无响应。
-        装在列表里for循坏也不行，目前还没找到更好的方法
+        装在列表里for循环也不行，目前还没找到更好的方法
         """
         if bool:
             # 设置发送者id样式
             self.FontFormat.setForeground(self.Userfont)
             self.textEdit.mergeCurrentCharFormat(self.FontFormat)
-            self.textEdit.appendPlainText("".join(msg.split(": ")[0]) + ":")
+            self.textEdit.appendPlainText("".join(msg.split(": ", 1)[0]) + ":")
 
             # 设置弹幕内容样式
             self.FontFormat.setForeground(self.Comfont)
             self.textEdit.mergeCurrentCharFormat(self.FontFormat)
             self.tc.movePosition(QTextCursor.End)
-            self.textEdit.insertPlainText("".join(msg.split(": ")[1]))
+            self.textEdit.insertPlainText("".join(msg.split(": ", 1)[1]))
+            # self.textEdit.appendPlainText("".join(msg.split(": ", 1)[1]))
             # 刷新,可有可无
             QApplication.processEvents()
+            # 确保光标可见
+            self.textEdit.ensureCursorVisible()
 
     def modifySize(self, type, value):
         """多线程减轻主线程压力，防止窗口无响应"""

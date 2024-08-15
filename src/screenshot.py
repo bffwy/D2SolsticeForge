@@ -10,29 +10,10 @@ from functools import lru_cache
 from utils import path_helper, d2_operation
 from loguru import logger
 from itertools import chain
+from settings import mode
 
 MONITOR_WIDTH, MONITOR_HEIGHT = ImageGrab.grab().size
 logger.info(f"屏幕分辨率: {MONITOR_WIDTH}x{MONITOR_HEIGHT}")
-
-# 计算缩放比例
-RESIZE_RATIO_WIDTH = MONITOR_WIDTH / 2560
-RESIZE_RATIO_HEIGHT = MONITOR_HEIGHT / 1440
-
-
-def resize(x, y):
-    return int(x * RESIZE_RATIO_WIDTH), int(y * RESIZE_RATIO_HEIGHT)
-
-
-def get_resize(*points):
-    return tuple(chain.from_iterable(resize(*point) for point in points))
-
-
-def get_resize_bridge(x, y):
-    return get_resize((x, y))
-
-
-def convert_image_to_open_cv(image: Image.Image):
-    return cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
 
 @lru_cache(maxsize=None)
@@ -75,11 +56,41 @@ def get_hsv_similarity(grabbed_image, local_image):
     return compare_hist(local_image, img)
 
 
+def convert_image_to_open_cv(image: Image.Image):
+    return cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
+
+def sharpen_image(image: cv2.typing.MatLike):
+    # 创建一个锐化核
+    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+    # 使用filter2D函数进行图像锐化
+    sharpened = cv2.filter2D(image, -1, kernel)
+    return sharpened
+
+
+def get_template_similarity_combined(image: Image.Image, template: cv2.typing.MatLike):
+    image_cv = convert_image_to_open_cv(image)
+    # 对图像和模板进行锐化
+    sharpened_image = sharpen_image(image_cv)
+    sharpened_template = sharpen_image(template)
+    # 使用锐化的图像和模板进行模板匹配
+    result_sharpened = cv2.matchTemplate(sharpened_image, sharpened_template, cv2.TM_CCOEFF_NORMED)
+    min_val_sharpened, max_val_sharpened, min_loc_sharpened, max_loc_sharpened = cv2.minMaxLoc(result_sharpened)
+    # 使用原始的图像和模板进行模板匹配
+    result_original = cv2.matchTemplate(image_cv, template, cv2.TM_CCOEFF_NORMED)
+    min_val_original, max_val_original, min_loc_original, max_loc_original = cv2.minMaxLoc(result_original)
+    # 返回两种方法中相似度最大的那个
+    return max(max_val_sharpened, min_val_original)
+
+
 def get_template_similarity(image: Image.Image, template: cv2.typing.MatLike):
     image_cv = convert_image_to_open_cv(image)
+    # 对图像和模板进行锐化
+    image_cv = sharpen_image(image_cv)
+    template = sharpen_image(template)
     result = cv2.matchTemplate(image_cv, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    return min_val
+    return max_val
 
 
 def get_mask_ratio(image: np.ndarray, lower_bound: np.ndarray, upper_bound: np.ndarray):
@@ -119,13 +130,6 @@ def check_bbox(bbox):
     return True
 
 
-def replace_coordinates(bbox):
-    return [
-        int(bbox[i] * RESIZE_RATIO_WIDTH) if i % 2 == 0 else int(bbox[i] * RESIZE_RATIO_HEIGHT)
-        for i in range(len(bbox))
-    ]
-
-
 def get_similarity(path, bbox, debug):
     real_path = get_path_by_screen_size(path)
     if not os.path.exists(real_path):
@@ -135,7 +139,7 @@ def get_similarity(path, bbox, debug):
     ori_box = bbox.copy()
     bbox = d2_operation.get_d2_box(ori_box)
     grabbed_image = grab_image(bbox)
-    ret = get_template_similarity(grabbed_image, image_cv)
+    ret = get_template_similarity_combined(grabbed_image, image_cv)
     if debug:
         time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
         file_name = f"{path}_{time_str}_相似度{ret:.2f}.png"
@@ -174,7 +178,7 @@ def crop_image(image_path, path_name, bbox):
 
 
 def init_image():
-    file_path = path_helper.get_config("task_config.json")
+    file_path = path_helper.get_config(mode.task_config)
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             config = json.load(f)
@@ -191,7 +195,7 @@ def init_image():
 
 def get_image_box():
     d = {}
-    file_path = path_helper.get_config("task_config.json")
+    file_path = path_helper.get_config(mode.task_config)
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
             config = json.load(f)
@@ -204,9 +208,13 @@ def get_image_box():
 
 
 def get_screen_shot(bbox=None):
+    import time
+
     if bbox is None:
-        bbox = d2_operation.get_d2_box([0, 0, 1920, 1080])
+        bbox = d2_operation.get_d2_box()
     screenshot = grab_image(bbox)
+    # time_str = time.strftime("%Y-%m-%d_%H-%M-%S")
+    # screenshot.save(f"./debug/{time_str}_getmission.png")
     image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
     return image
 
@@ -216,17 +224,6 @@ def get_screen_shot(bbox=None):
 # d2_operation.active_window()
 # import time
 # time.sleep(2)
-# orbit
-# bbox = [90, 1387, 180, 1420]
 
-# win
-# bbox = [125, 15, 540, 145]
-
-# enter map
-# bbox = [1130, 93, 1430, 155]
-# test_get_image(bbox)
-
-# bbox = [181, 1116, 256, 1153]
-
-# bbox = [213, 95, 526, 189]
+# bbox = [452, 331, 637, 386]
 # test_get_image(bbox)

@@ -2,6 +2,7 @@ import multiprocessing
 
 multiprocessing.freeze_support()
 from TaskControl.auto import AutoBridge
+
 from TaskControl.Base.CommonLogger import my_logger
 from TaskControl.Base.TimerManager import TimerManager
 from my_window.MainWindow import log_window

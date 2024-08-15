@@ -1,6 +1,7 @@
 import json
 import os
 from utils import path_helper
+from settings import mode
 
 
 class Event:
@@ -26,7 +27,7 @@ class Task:
         self.finish_check = False
 
     def init(self):
-        file_path = path_helper.get_config("task_config.json")
+        file_path = path_helper.get_config(mode.task_config)
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 config = json.load(f)

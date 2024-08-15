@@ -122,15 +122,13 @@ real_use_key = {
     "部署机灵",
     "打开物品栏",
 }
-
+real_use_key = list(key_chinese_2_en.keys())
 bind_key_en = get_d2_keybinds([key_chinese_2_en[key] for key in real_use_key])
 bind_key_chn = {key_en_2_chinese[k]: v for k, v in bind_key_en.items()}
 
 mouse_buttons = ["primary", "secondary", "middle", "XButton1", "XButton2"]
 
-for key, value in bind_key_en.items():
-    if not value:
-        raise Exception(f"需要绑定键: {key_en_2_chinese[key]}")
+print(bind_key_chn)
 
 
 def key_down(bind_name, click=False):
@@ -192,10 +190,12 @@ def free_all():
 
 window_x = None
 window_y = None
+window_w = None
+window_h = None
 
 
 def active_window(match_string="Destiny 2"):
-    global window_x, window_y
+    global window_x, window_y, window_w, window_h
 
     def enum_windows():
         def callback(hwnd, windows):
@@ -210,13 +210,18 @@ def active_window(match_string="Destiny 2"):
 
     for hwnd, title in windows:
         if match_string in title and ("Tiger D3D Window" == win32gui.GetClassName(hwnd)):
-            win32gui.ShowWindow(hwnd, 5)
-            win32gui.SetForegroundWindow(hwnd)
-            # win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
-            win32gui.BringWindowToTop(hwnd)
             ret = win32gui.GetWindowRect(hwnd)
             window_x = ret[0]
             window_y = ret[1]
+            w, h = ret[2] - ret[0], ret[3] - ret[1]
+            window_w, window_h = w, h
+            print("windows :", w, h)
+            win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 10, 10, w, h, win32con.SWP_SHOWWINDOW)
+            win32gui.ShowWindow(hwnd, 5)
+            # win32gui.ShowWindow(hwnd, win32con.SW_NORMAL)
+            win32gui.SetForegroundWindow(hwnd)
+            win32gui.BringWindowToTop(hwnd)
+
             break
 
 
@@ -243,13 +248,6 @@ def init_window():
             break
 
 
-def get_d2_pos(x, y):
-    global window_x, window_y
-    if window_x is None:
-        init_window()
-    return window_x + x, window_y + y
-
-
 def get_d2_position(pos):
     global window_x, window_y
     if window_x is None:
@@ -258,10 +256,15 @@ def get_d2_position(pos):
     return window_x + x, window_y + y
 
 
-def get_d2_box(box):
-    x, y, x1, y1 = box
-    x, y = get_d2_pos(x, y)
-    x1, y1 = get_d2_pos(x1, y1)
+def get_d2_box(box=None):
+    global window_x, window_y, window_w, window_h
+    if box:
+        x, y, x1, y1 = box
+    else:
+        x, y, x1, y1 = window_x, window_y, window_x + window_w, window_y + window_h
+        return x, y, x1, y1
+    x, y = get_d2_position([x, y])
+    x1, y1 = get_d2_position([x1, y1])
     return x, y, x1, y1
 
 
@@ -273,12 +276,15 @@ def back_2_d2_pos(x, y):
 
 
 def d2_move(x, y):
-    x, y = get_d2_pos(x, y)
+    x, y = get_d2_position([x, y])
     pydirectinput.moveTo(x, y)
 
 
+# init_window()
 # print(back_2_d2_pos(1486, 902))
-# print(back_2_d2_pos(1536, 931))
+# print(back_2_d2_pos(1962, 1128))
 
 # d2 pos (109, 53, 2045, 1172)
 # 876, 335
+# 1962, 1128
+# active_window()

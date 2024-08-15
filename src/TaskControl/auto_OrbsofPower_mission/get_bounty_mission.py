@@ -23,24 +23,43 @@ refresh_time = mission_settings.refresh_time
 
 refresh_pos_x = mission_settings.refresh_pos_x
 refresh_pos_y = mission_settings.refresh_pos_y
-x_range = mission_settings.x_range
 
 min_radius = mission_settings.min_radius
 max_radius = mission_settings.max_radius
 y_diff = mission_settings.y_diff
+x_range = mission_settings.x_range
+perfect_like = mission_settings.perfect_like
 
 REFRESH_LEAVE = 5
 GET_MISSION_LEAVE = 2
 
 
-def get_index_by_y_pos(x_pos, y_pos):
-    x_check = x_range[0] <= x_pos <= x_range[1]
-    if not x_check:
-        return
+def get_index_by_pos(x_pos, y_pos):
+    index_x = index_y = None
+    for i, pos in enumerate(x_range):
+        if pos - y_diff <= x_pos <= pos + y_diff:
+            index_x = i
+            break
 
     for i, pos in enumerate(refresh_pos_y):
         if pos - y_diff <= y_pos <= pos + y_diff:
-            return i
+            index_y = i
+            break
+    return index_x, index_y
+
+
+def click_pos(x, y):
+    find_pos = x, y
+    d2_operation.d2_move(*find_pos)
+    time.sleep(0.5)
+    pydirectinput.click()
+    time.sleep(0.5)
+
+
+def click_by_index(x_index, y_index):
+    click_pos_x = x_range[x_index]
+    click_pos_y = refresh_pos_y[y_index]
+    click_pos(click_pos_x, click_pos_y)
 
 
 def get_current_page_mission():
@@ -51,9 +70,9 @@ def get_current_page_mission():
         gray_blurred,
         cv2.HOUGH_GRADIENT,
         dp=1,
-        minDist=20,
+        minDist=30,
         param1=50,
-        param2=30,
+        param2=perfect_like,
         minRadius=min_radius,
         maxRadius=max_radius,
     )
@@ -63,10 +82,11 @@ def get_current_page_mission():
         # 先不二次检测 看看情况
         for i in circles[0, :]:
             center_x, center_y = int(i[0]), int(i[1])
-            y_index = get_index_by_y_pos(center_x, center_y)
-            print(f"find line: {y_index} pos:{center_x}, {center_y}")
-            if y_index is not None:
-                find_index_and_pos[y_index].append([center_x, center_y])
+            x_index, y_index = get_index_by_pos(center_x, center_y)
+            print(f"发现第{x_index}行 第 {y_index}列的圆 半径：{int(i[2])} 位置:{center_x}, {center_y}")
+            if x_index is None or y_index is None:
+                continue
+            find_index_and_pos[y_index].append((center_x, center_y))
     return find_index_and_pos
 
 
@@ -83,48 +103,66 @@ def refresh_mission(require_index):
     time.sleep(0.5)
 
 
-def re_get_page_mission(page_index):
+def re_get_page_mission(page_index, force_refresh=False):
     require_index = [0, 1, 2]
     if page_index == 1:
         require_index = [0, 1]
     get_mission_index = {i: False for i in require_index}
     use_leave = 0
-
+    get_mission_num = 0
     current_refresh_time = refresh_time
-    while current_refresh_time > 0:
-        current_refresh_time -= 1
+    max_time = 100
+    while True and max_time > 0:
+        max_time -= 1
         find_index_and_pos = get_current_page_mission()
-        for index in find_index_and_pos:
-            if get_mission_index[index]:
-                continue
-            get_mission_index[index] = True
-
-            find_pos = find_index_and_pos[index][0]
-            d2_operation.d2_move(*find_pos)
-            time.sleep(0.5)
-            pydirectinput.click()
-            time.sleep(0.5)
-            use_leave += GET_MISSION_LEAVE
+        if find_index_and_pos:
+            for y_index, items in find_index_and_pos.items():
+                items.sort(key=lambda x: x[0], reverse=True)
+                if get_mission_index[y_index]:
+                    continue
+                get_mission_index[y_index] = True
+                find_pos = items[0]
+                click_pos(*find_pos)
+                use_leave += GET_MISSION_LEAVE
+                get_mission_num += 1
 
         need_refresh_index = [i for i in require_index if not get_mission_index[i]]
+        use_leave += REFRESH_LEAVE * len(need_refresh_index)
+
         if not need_refresh_index:
             break
-        use_leave += REFRESH_LEAVE * len(need_refresh_index)
+
+        if current_refresh_time <= 0 and not force_refresh:
+            break
+
         refresh_mission(need_refresh_index)
+        current_refresh_time -= 1
 
-    return use_leave
+    # 保底白悬赏
+    if mission_settings.get_white_mission:
+        for i in require_index:
+            if not get_mission_index[i]:
+                click_by_index(0, i)
+                use_leave += 1
+                get_mission_num += 1
+    return use_leave, get_mission_num
 
 
-def get_mission():
+def _get_mission():
     do_actions("打开至日熔炉界面")
     time.sleep(2)
-    use_leave = re_get_page_mission(0)
+    use_leave, get_mission_num = re_get_page_mission(0)
     time.sleep(1)
     d2_operation.d2_move(*next_page_button_pos)
     time.sleep(0.5)
     pydirectinput.click()
     time.sleep(1)
-    use_leave += re_get_page_mission(1)
+    use_leave_2, get_mission_num_2 = re_get_page_mission(1)
+    use_leave += use_leave_2
+    get_mission_num += get_mission_num_2
+    if get_mission_num == 0:
+        re_get_page_mission(1, force_refresh=True)
+
     pydirectinput.press("escape")
     time.sleep(1)
     pydirectinput.press("escape")
@@ -132,11 +170,12 @@ def get_mission():
     return use_leave
 
 
-# from utils import d2_operation
+def get_mission():
+    use_leave = _get_mission()
+    return use_leave
+
 
 # d2_operation.active_window()
-# # time.sleep(2)
 # print(get_mission())
-
 # print(re_get_page_mission(0))
 # print(get_current_page_mission())

@@ -1,19 +1,9 @@
 {
     "actions": [
         {
-            "注释": "打开任务",
+            "注释": "切3号位武器自杀",
             "type": "press",
-            "key": "打开任务"
-        },
-        {
-            "type": "wait",
-            "duration": 1,
-            "blocking": true
-        },
-        {
-            "注释": "下一页",
-            "type": "press",
-            "key": "向后移动"
+            "key": "切换到威能武器"
         },
         {
             "type": "wait",
@@ -22,9 +12,21 @@
         },
         {
             "type": "mouse_move",
-            "absolute": [
-                560,
-                598
+            "relative": [
+                0,
+                500
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 0.1,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "relative": [
+                0,
+                500
             ]
         },
         {
@@ -33,7 +35,7 @@
             "blocking": true
         },
         {
-            "type": "rightClick"
+            "type": "leftClick"
         }
     ]
 }

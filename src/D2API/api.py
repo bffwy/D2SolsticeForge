@@ -262,6 +262,20 @@ def trans_item_to_vault(item, character_id):
     print(f"TransferItem: {item_id},,ret.status_code={r.status_code}")
 
 
+def perk_check(item_data):
+    perks = item_data["perks"]["data"]["perks"]
+    tmp_perk_require = {
+        586671776: [[4215153072, 319132642], [1170256448]],
+        4169225313: [
+            [
+                247254824,
+            ]
+        ],
+    }
+
+    pass
+
+
 def check_before_move(item):
     # 先检查护甲属性 是否满足要求
     # 总和 65 以上 and 力量 == 2
@@ -278,8 +292,9 @@ def check_before_move(item):
         return False
     item_bucket_type_hash = get_item_bucketTypeHash_by_hash(item_hash)
     print("include:", config.dim_settings.include_items)
+    logger.info(f"item_bucket_type_hash:{item_bucket_type_hash}")
     if item_bucket_type_hash and int(item_bucket_type_hash) not in CONST.ArmorBucketTypeHash:
-        print(f"item_hash: {item_hash}")
+        logger.info(f"item_hash: {item_hash}")
         if config.dim_settings.include_items and int(item_hash) not in config.dim_settings.include_items:
             # 武器 include 判断
             return False
@@ -293,7 +308,7 @@ def check_before_move(item):
         value = hash_value["value"]
         hash_value_mal[statHush] = value
         count += int(value)
-    print(f"stats: {count}")
+    logger.info(f"stats: {count}")
     return count >= config.dim_settings.armor_sum_required
 
     if item_data:
@@ -357,14 +372,14 @@ def get_item_quantity(item_hash):
 def test():
     global last_update_token_time
     last_update_token_time = time.monotonic()
-    CONST.ACCESS_TOKEN = "CK+0BhKGAgAgREzRiAxMn+D0NpirUS3XucAAE2LhLoNK1F2nBzjrRabgAAAAQkvV7O9yHzrTOPzTkyZJA+62eIJ+YCssODXE77D+JtxLzZ1eLFEwWvgMLfOSzpQvnADU0BJ2WJ9qwsVnHJpVjd1c+CCzKkONjiXMeFnbfV9pNQakufALrfgR1aC7aSmtb8epl563G8O0sfRsoQohqn2gTGi/lT+5wKGL6PbxGpq66B4ceYKJ4tRdnMJcIvj4Mk6/6O51sUOy6cKRhmWyFQUGDVhOsvALsYatk6mJZLdI/hBRCF4uLdlB0O2H9y5pbbuGyjRUmFZFAaKlJx68ntX3YqeTLw1Smd3ZtPxcFg4="
+    CONST.ACCESS_TOKEN = "COK1BhKGAgAglImkeGbsOLuv0h8Q7dhOnne0i09jjqLzTkTe7HGbE8HgAAAAl+gX7RFGb61oRDDvMUb+yjhT9QrxnFc1ipo0ecOd65Vj7DnlOAEgK6qBjPng5T6zNp9Ga01coAiTCMyiighuH5yXolS6X/iJaW+v8bl6gNSdLW9vBhlhTxft/gVNoIEfkGwMIzEIRSKyZrxlmMDLPIRMxYJNHdUbP5D3mlLHDvdCVv2C57R3thwMV62zDmhETuzkmFxFgKDfHUPWhF+YkiAyJre+baVpsmIqTeWCOZSLWuHLqt/7ZOSm3y5GK4we0edkJ1KCYu+0ZKImzM2vrDajysFgjEBcSOUX2lGpg3U="
     COMMON_HEADERS["Authorization"] = "Bearer " + CONST.ACCESS_TOKEN
     # real_move_items_from_postmaster_to_vault()
     # data = get_item_common_data(6917530009394349199)
     # get_profile_inventory()
     # print(profile_item_quantity)
-    # data = get_item_common_data(1644922223)
-    # print(data)
+    data = get_item_common_data(6917530047274205800)
+    print(data)
     # item_data = data["item"]["data"]
     # check_before_move(item_data)
 
@@ -372,3 +387,4 @@ def test():
 # update_access_token()
 # test()
 # real_move_items_from_postmaster_to_vault()
+# data = get_item_common_data(1644922223)
