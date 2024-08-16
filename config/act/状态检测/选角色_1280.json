@@ -9,17 +9,12 @@
             ]
         },
         {
+            "type": "wait",
+            "duration": 1.5,
+            "blocking": true
+        },
+        {
             "type": "leftClick"
-        },
-        {
-            "type": "wait",
-            "duration": 1,
-            "blocking": true
-        },
-        {
-            "type": "wait",
-            "duration": 5,
-            "blocking": true
         }
     ]
 }

@@ -43,7 +43,7 @@
         },
         {
             "type": "wait",
-            "duration": 1.5,
+            "duration": 1,
             "blocking": true
         }
     ]

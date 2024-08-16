@@ -172,7 +172,8 @@ class AutoPowerMissionTask(object):
     def get_new_mission(self):
         use_leave = get_mission()
         self.current_leave -= use_leave
-        if self.current_leave < other_settings.leave_leaf:
+        req = min(other_settings.leave_leaf, 0)
+        if self.current_leave <= req:
             self.goal_finish = True
 
     def update_main_task(self):

@@ -1,7 +1,7 @@
 [mission]
 next_page_button_pos = [967, 457] # 锻炉 下一页按钮 位置
-refresh_time = 0 #刷新悬赏次数 （眉笔机制）
-get_white_mission = false # 是否获取白悬赏 (填否的话，会忽视眉笔机制，至少刷一个能量球悬赏(最多再刷100次))
+refresh_time = 1 #刷新悬赏次数 （眉笔机制） 不拿白悬赏至少刷一次
+get_white_mission = false # 是否获取白悬赏
 refresh_pos_x = 165 # 刷新悬赏的横坐标
 refresh_pos_y =  [334, 455, 577] # 刷新悬赏的纵坐标
 x_range =  [232, 300, 370]  # 可点击悬赏的横坐标
@@ -24,10 +24,10 @@ debug = false # 是否显示截图,截图会保存在debug目录
 
 [other]
 use_dim = true
-rounds = 180 # 每次刷多少场
+rounds = 200 # 每次刷多少场
 skill_rounds = 24 # 产球的技能循环次数
 start_use_leave = 50 # 开始时,超过这个数量就去遗愿用,小于就去PM刷
-leave_leaf = 50 # 刷银叶剩余多少就不刷了
+leave_leaf = 500 # 刷银叶剩余多少就不刷了
 
 [mode]
 current_mod = 1 # 1: 全自动(刷银叶 + 用银叶) 2:kf 练功房用银叶 3：pm刷银叶 4: 测试行为 5：只遗愿刷银叶; 6 测试检测银叶；7 测试获取悬赏

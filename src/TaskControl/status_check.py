@@ -4,7 +4,6 @@ from TaskControl.Base.TimerManager import ClassTimerManager
 from TaskControl.Base.CommonLogger import my_logger
 from TaskControl.ActControl import do_actions, esc_once, enter
 
-interval = 15
 
 check_image = {
     "in_orbit": [50, 724, 106, 748],
@@ -19,6 +18,7 @@ def start_check_in_orbit(func):
     def wrapper(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         self.check_in_orbit = True
+        self.adjust_tick_interval()
         if callable(self.error_callback):
             self.do_error_callback()
         return result
@@ -34,6 +34,7 @@ class StatusControl(object):
         self.timer = ClassTimerManager()
         self.timer_id = None
         self.check_in_orbit = False
+        self.interval = 15
 
         # 定义一个字典来存储每种状态的处理函数
         self.status_handlers = {
@@ -43,6 +44,13 @@ class StatusControl(object):
             "login_page": self.handle_login,
             "in_orbit": self.handle_in_orbit,
         }
+
+    def adjust_tick_interval(self):
+        if self.check_in_orbit:
+            # 加速
+            self.interval = 3
+        else:
+            self.interval = 15
 
     @start_check_in_orbit
     def handle_error_page(self):
@@ -68,6 +76,7 @@ class StatusControl(object):
         if self.check_in_orbit:
             my_logger.info("检测到玩家在轨道")
             self.check_in_orbit = False
+            self.adjust_tick_interval()
             if callable(self.finish_callback):
                 self.finish_callback()
 
@@ -78,7 +87,7 @@ class StatusControl(object):
     def start(self):
         if self.timer_id:
             self.timer.cancel_timer(self.timer_id)
-        self.timer_id = self.timer.add_timer(interval, self.real_check)
+        self.timer_id = self.timer.add_timer(self.interval, self.real_check)
 
     def real_check(self):
         for status, handler in self.status_handlers.items():
@@ -88,4 +97,4 @@ class StatusControl(object):
                     handler()  # 调用相应的处理函数
                     break
 
-        self.timer_id = self.timer.add_timer(interval, self.real_check)
+        self.timer_id = self.timer.add_timer(self.interval, self.real_check)

@@ -98,7 +98,7 @@ def click_by_index(x_index, y_index):
     click_pos(click_pos_x, click_pos_y)
 
 
-def get_current_page_mission(page_index):
+def get_current_page_mission():
     bbox = d2_operation.get_d2_box()
     screenshot = ImageGrab.grab(bbox=bbox)
     image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -126,7 +126,7 @@ def get_current_page_mission(page_index):
             if x_index is None or y_index is None:
                 continue
             print(
-                f"第 {page_index+1} 页;第 {x_index+1} 行 第 {y_index+1} 列的圆 半径：{int(i[2])} 位置:{center_x}, {center_y},, 颜色:{color_status.value}"
+                f"第 {x_index+1} 行 第 {y_index+1} 列的圆 半径：{int(i[2])} 位置:{center_x}, {center_y},, 颜色:{color_status.value}"
             )
             find_index_and_pos[y_index].append((center_x, center_y, color_status))
     return find_index_and_pos
@@ -151,36 +151,47 @@ def re_get_page_mission(page_index, force_refresh=False):
         require_index = [0, 1]
     get_mission_index = {i: False for i in require_index}
     use_leave = 0
-    get_mission_num = 0
+    get_mission_num = 0  # 真实获取的
+    presence_gray_mission = False  # 检测到是灰绿悬赏
+
     current_refresh_time = refresh_time
+    if not mission_settings.get_white_mission:
+        current_refresh_time = min(1, current_refresh_time)
+
     max_time = 100
     while True and max_time > 0:
         max_time -= 1
-        find_index_and_pos = get_current_page_mission(page_index)
-        if find_index_and_pos:
-            for y_index, items in find_index_and_pos.items():
-                # items.sort(key=lambda x: x[0], reverse=True)
-                items.sort(key=lambda x: (x[1], -x[0]))
-                if get_mission_index[y_index]:
+        find_index_and_pos = get_current_page_mission()
+        for y_index in sorted(find_index_and_pos):
+            items = find_index_and_pos[y_index]
+            items.sort(key=lambda x: (-x[0]))
+            if get_mission_index[y_index]:
+                continue
+            for item in items:
+                find_pox_x, find_pox_y, color_status = item
+                if color_status == ColorStatus.OTHER:
+                    # 其它悬赏
                     continue
+                if color_status == ColorStatus.GRAY_GREEN:
+                    presence_gray_mission = True
+                    get_mission_index[y_index] = True
+                    continue
+
                 get_mission_index[y_index] = True
-                find_pox_x, find_pox_y, color_status = items[0]
-                if color_status != ColorStatus.GREEN:
-                    # 不是绿悬赏
-                    continue
                 click_pos(find_pox_x, find_pox_y)
                 use_leave += GET_MISSION_LEAVE
                 get_mission_num += 1
+                break
 
         need_refresh_index = [i for i in require_index if not get_mission_index[i]]
         if not need_refresh_index:
             break
-
         if current_refresh_time <= 0 and not force_refresh:
+            break
+        if force_refresh and get_mission_num > 0:
             break
         refresh_mission(need_refresh_index)
         use_leave += REFRESH_LEAVE * len(need_refresh_index)
-
         current_refresh_time -= 1
 
     # 保底白悬赏
@@ -191,27 +202,29 @@ def re_get_page_mission(page_index, force_refresh=False):
                 use_leave += 1
                 get_mission_num += 1
 
-    return use_leave, get_mission_num
+    return use_leave, get_mission_num, presence_gray_mission
 
 
 def _get_mission():
     do_actions("打开至日熔炉界面")
     time.sleep(2)
-    use_leave, get_mission_num = re_get_page_mission(0)
+    use_leave, get_mission_num, presence_gray_mission = re_get_page_mission(0)
     time.sleep(1)
     d2_operation.d2_move(*next_page_button_pos)
     time.sleep(0.5)
     print(f"下一页")
     pydirectinput.click()
     time.sleep(1)
-    use_leave_2, get_mission_num_2 = re_get_page_mission(1)
-    use_leave += use_leave_2
-    get_mission_num += get_mission_num_2
+    second_result = re_get_page_mission(1)
+    use_leave += second_result[0]
+    get_mission_num += second_result[1]
+    presence_gray_mission = presence_gray_mission or second_result[2]
 
     print(f"使用银叶 {use_leave}, 获取任务 {get_mission_num} 个")
-    if get_mission_num == 0:
-        use_leave_3, get_mission_num_2 = re_get_page_mission(1, force_refresh=True)
-        use_leave += use_leave_3
+    # 没有获取到任务，同时 没有灰绿的悬赏
+    if get_mission_num == 0 and not presence_gray_mission:
+        result = re_get_page_mission(1, force_refresh=True)
+        use_leave += result[0]
 
     pydirectinput.press("escape")
     time.sleep(1)
