@@ -163,3 +163,4 @@ cython_debug/
 .vscode/
 dim_settings.toml
 debug/
+logs/
