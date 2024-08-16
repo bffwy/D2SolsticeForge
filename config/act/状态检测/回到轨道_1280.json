@@ -1,0 +1,19 @@
+{
+    "actions": [
+        {
+            "注释": "esc",
+            "type": "press",
+            "key": "escape"
+        },
+        {
+            "type": "wait",
+            "duration": 10,
+            "blocking": true
+        },
+        {
+            "注释": "回车",
+            "type": "press",
+            "key": "enter"
+        }
+    ]
+}

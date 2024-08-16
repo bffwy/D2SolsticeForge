@@ -23,13 +23,16 @@ class AutoBridge(object):
         self.auto_leave_task = GenLeaveTask(finish_Callback=self.on_auto_leave_finish)
         self.use_leave_task = AutoPowerMissionTask(finish_Callback=self.on_use_leave_finish)
         self.simple_mission_task = SimpleMissionTask()
-        self.status_control = StatusControl(finish_Callback=self.on_status_check)
+        self.status_control = StatusControl(error_callback=self.on_status_error, finish_Callback=self.on_status_check)
         self.event_queue = Queue()
 
-    def on_status_check(self):
+    def on_status_error(self):
+        # 检测出现错误。停止行为
         self.event_queue.queue.clear()
         self.stop()
-        self.status_control.get_back_to_orbit()
+
+    def on_status_check(self):
+        # 错误恢复,继续
         self.event_queue.put((self.real_start, None))
 
     def init_task(self, task_class, event_handler=None):

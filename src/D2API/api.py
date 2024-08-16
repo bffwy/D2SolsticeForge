@@ -308,7 +308,15 @@ def check_before_move(item):
         value = hash_value["value"]
         hash_value_mal[statHush] = value
         count += int(value)
+    logger.info(f"item_stat: {hash_value_mal}")
     logger.info(f"stats: {count}")
+    return (
+        count >= 67
+        and hash_value_mal[str(CONST.StatHush.Intellect)] == 2
+        and hash_value_mal[str(CONST.StatHush.Mobility)] == 2
+        and hash_value_mal[str(CONST.StatHush.Strength)] == 2
+    )
+
     return count >= config.dim_settings.armor_sum_required
 
     if item_data:

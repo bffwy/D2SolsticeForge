@@ -15,8 +15,17 @@ import numpy as np
 from screenshot import get_screen_shot
 from collections import defaultdict
 from TaskControl.ActControl import do_actions
-from settings import mission_settings
+from settings import mission_settings, mission_color_settings
 from utils import d2_operation
+from PIL import ImageGrab
+from enum import Enum
+
+
+class ColorStatus(Enum):
+    GREEN = "绿色悬赏"
+    GRAY_GREEN = "灰绿色悬赏"
+    OTHER = "其他悬赏"
+
 
 next_page_button_pos = mission_settings.next_page_button_pos
 refresh_time = mission_settings.refresh_time
@@ -32,6 +41,33 @@ perfect_like = mission_settings.perfect_like
 
 REFRESH_LEAVE = 5
 GET_MISSION_LEAVE = 2
+
+gray_green_range = mission_color_settings.gray_green_range
+green_range = mission_color_settings.green_range
+check_pixel_offset = mission_color_settings.check_pixel_offset
+
+
+def is_in_range(pixel, range1, range2):
+    for p, r1, r2 in zip(pixel, range1, range2):
+        if not r1 <= p <= r2:
+            return False
+    return True
+
+
+def get_color_status(screen_shot, center_x, center_y):
+    color_status_counts = {ColorStatus.GRAY_GREEN: 0, ColorStatus.GREEN: 0, ColorStatus.OTHER: 0}
+    for pixel_pos in check_pixel_offset:
+        pix = screen_shot.getpixel((center_x + pixel_pos[0], center_y + pixel_pos[1]))
+        print(f"{pixel_pos}: 像素值: {pix}")
+        if is_in_range(pix, gray_green_range[0], gray_green_range[1]):
+            color_status_counts[ColorStatus.GRAY_GREEN] += 1
+        elif is_in_range(pix, green_range[0], green_range[1]):
+            color_status_counts[ColorStatus.GREEN] += 1
+        else:
+            color_status_counts[ColorStatus.OTHER] += 1
+
+    # 返回出现次数最多的颜色状态
+    return max(color_status_counts, key=color_status_counts.get)
 
 
 def get_index_by_pos(x_pos, y_pos):
@@ -62,8 +98,11 @@ def click_by_index(x_index, y_index):
     click_pos(click_pos_x, click_pos_y)
 
 
-def get_current_page_mission():
-    image = get_screen_shot()
+def get_current_page_mission(page_index):
+    bbox = d2_operation.get_d2_box()
+    screenshot = ImageGrab.grab(bbox=bbox)
+    image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+    # image = get_screen_shot()
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray_blurred = cv2.GaussianBlur(gray, (9, 9), 0)
     circles = cv2.HoughCircles(
@@ -83,10 +122,13 @@ def get_current_page_mission():
         for i in circles[0, :]:
             center_x, center_y = int(i[0]), int(i[1])
             x_index, y_index = get_index_by_pos(center_x, center_y)
-            print(f"发现第{x_index}行 第 {y_index}列的圆 半径：{int(i[2])} 位置:{center_x}, {center_y}")
+            color_status = get_color_status(screenshot, center_x, center_y)
             if x_index is None or y_index is None:
                 continue
-            find_index_and_pos[y_index].append((center_x, center_y))
+            print(
+                f"第 {page_index+1} 页;第 {x_index+1} 行 第 {y_index+1} 列的圆 半径：{int(i[2])} 位置:{center_x}, {center_y},, 颜色:{color_status.value}"
+            )
+            find_index_and_pos[y_index].append((center_x, center_y, color_status))
     return find_index_and_pos
 
 
@@ -114,28 +156,31 @@ def re_get_page_mission(page_index, force_refresh=False):
     max_time = 100
     while True and max_time > 0:
         max_time -= 1
-        find_index_and_pos = get_current_page_mission()
+        find_index_and_pos = get_current_page_mission(page_index)
         if find_index_and_pos:
             for y_index, items in find_index_and_pos.items():
-                items.sort(key=lambda x: x[0], reverse=True)
+                # items.sort(key=lambda x: x[0], reverse=True)
+                items.sort(key=lambda x: (x[1], -x[0]))
                 if get_mission_index[y_index]:
                     continue
                 get_mission_index[y_index] = True
-                find_pos = items[0]
-                click_pos(*find_pos)
+                find_pox_x, find_pox_y, color_status = items[0]
+                if color_status != ColorStatus.GREEN:
+                    # 不是绿悬赏
+                    continue
+                click_pos(find_pox_x, find_pox_y)
                 use_leave += GET_MISSION_LEAVE
                 get_mission_num += 1
 
         need_refresh_index = [i for i in require_index if not get_mission_index[i]]
-        use_leave += REFRESH_LEAVE * len(need_refresh_index)
-
         if not need_refresh_index:
             break
 
         if current_refresh_time <= 0 and not force_refresh:
             break
-
         refresh_mission(need_refresh_index)
+        use_leave += REFRESH_LEAVE * len(need_refresh_index)
+
         current_refresh_time -= 1
 
     # 保底白悬赏
@@ -145,6 +190,7 @@ def re_get_page_mission(page_index, force_refresh=False):
                 click_by_index(0, i)
                 use_leave += 1
                 get_mission_num += 1
+
     return use_leave, get_mission_num
 
 
@@ -155,13 +201,17 @@ def _get_mission():
     time.sleep(1)
     d2_operation.d2_move(*next_page_button_pos)
     time.sleep(0.5)
+    print(f"下一页")
     pydirectinput.click()
     time.sleep(1)
     use_leave_2, get_mission_num_2 = re_get_page_mission(1)
     use_leave += use_leave_2
     get_mission_num += get_mission_num_2
+
+    print(f"使用银叶 {use_leave}, 获取任务 {get_mission_num} 个")
     if get_mission_num == 0:
-        re_get_page_mission(1, force_refresh=True)
+        use_leave_3, get_mission_num_2 = re_get_page_mission(1, force_refresh=True)
+        use_leave += use_leave_3
 
     pydirectinput.press("escape")
     time.sleep(1)

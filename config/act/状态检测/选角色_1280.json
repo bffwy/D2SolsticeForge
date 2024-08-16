@@ -1,0 +1,25 @@
+{
+    "actions": [
+        {
+            "type": "mouse_move",
+            "base_on_2560": true,
+            "absolute": [
+                900,
+                500
+            ]
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "wait",
+            "duration": 5,
+            "blocking": true
+        }
+    ]
+}

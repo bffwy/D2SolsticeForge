@@ -2,36 +2,81 @@ import time
 from screenshot import get_similarity
 from TaskControl.Base.TimerManager import ClassTimerManager
 from TaskControl.Base.CommonLogger import my_logger
-from TaskControl.ActControl import do_actions, esc_once
+from TaskControl.ActControl import do_actions, esc_once, enter
 
-interval = 60
+interval = 15
 
-check_image = {"leave_status": [442, 321, 627, 376], "in_orbit_1280": [50, 724, 106, 748]}
+check_image = {
+    "in_orbit": [50, 724, 106, 748],
+    "error_page": [343, 312, 422, 390],
+    "leave_page": [339, 329, 423, 413],
+    "first_page": [400, 332, 903, 476],
+    "login_page": [50, 720, 147, 747],
+}
 
 
 class StatusControl(object):
-    def __init__(self, finish_Callback=None):
+
+    def __init__(self, error_callback=None, finish_Callback=None):
+        self.error_callback = error_callback
         self.finish_callback = finish_Callback
         self.timer = ClassTimerManager()
 
-    def start(self):
-        self.timer.add_timer(interval, self.real_check)
+        self.timer_id = None
+        self.check_in_orbit = False
 
-    def real_check(self):
-        ret = get_similarity("leave_status", check_image["leave_status"], debug=False)
-        if ret >= 0.8:
-            my_logger.info("检测到玩家离开")
-            self.trigger()
-            return
-        self.timer.add_timer(interval, self.real_check)
+        # 定义一个字典来存储每种状态的处理函数
+        self.status_handlers = {
+            "error_page": self.handle_error_page,
+            "leave_page": self.handle_leave_status,
+            "first_page": self.handle_first_page,
+            "login_page": self.handle_login,
+            "in_orbit_1280": self.handle_in_orbit,
+        }
 
-    def trigger(self):
-        if self.finish_callback:
+    def handle_error_page(self):
+        my_logger.info("检测到错误界面")
+        esc_once()
+        self.do_error_callback()
+        self.check_in_orbit = True
+
+    def handle_leave_status(self):
+        my_logger.info("检测到玩家离开状态")
+        esc_once()
+        self.do_error_callback()
+        self.check_in_orbit = True
+
+    def handle_first_page(self):
+        my_logger.info("检测到在起始登录界面")
+        enter()
+        self.do_error_callback()
+
+    def handle_login(self):
+        my_logger.info("检测到玩家在登录界面")
+        do_actions("选角色")
+        self.do_error_callback()
+        self.check_in_orbit = True
+
+    def handle_in_orbit(self):
+        if self.check_in_orbit:
+            my_logger.info("检测到玩家在轨道")
+            self.check_in_orbit = False
             self.finish_callback()
 
-    def get_back_to_orbit(self):
-        esc_once()
-        time.sleep(3)
-        ret = get_similarity("in_orbit_1280", check_image["in_orbit_1280"], debug=False)
-        if ret >= 0.8:
-            my_logger.info("检测到玩家回到轨道")
+    def do_error_callback(self):
+        self.error_callback()
+
+    def start(self):
+        if self.timer_id:
+            self.timer.cancel_timer(self.timer_id)
+        self.timer_id = self.timer.add_timer(interval, self.real_check)
+
+    def real_check(self):
+        for status, handler in self.status_handlers.items():
+            if status in check_image:
+                ret = get_similarity(f"status/{status}", check_image[status], debug=False)
+                if ret >= 0.8:
+                    handler()  # 调用相应的处理函数
+                    break
+
+        self.timer_id = self.timer.add_timer(interval, self.real_check)

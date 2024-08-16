@@ -1,1 +1,78 @@
-{"actions": [{"注释": "打开任务", "type": "press", "key": "打开任务"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "mouse_move", "absolute": [718, 128]}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "leftClick"}, {"type": "wait", "duration": 1, "blocking": true}, {"type": "press", "key": "esc"}]}
+{
+    "actions": [
+        {
+            "注释": "打开任务",
+            "type": "press",
+            "key": "打开任务"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "mouse_move",
+            "absolute": [
+                718,
+                128
+            ]
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "leftClick"
+        },
+        {
+            "type": "wait",
+            "duration": 1,
+            "blocking": true
+        },
+        {
+            "type": "press",
+            "key": "esc"
+        }
+    ]
+}

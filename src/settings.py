@@ -23,6 +23,13 @@ class mission:
 
 
 @dataclasses.dataclass
+class mission_color:
+    gray_green_range: list = dataclasses.field(default_factory=lambda: [(30, 45, 10), (40, 55, 14)])
+    green_range: list = dataclasses.field(default_factory=lambda: [(55, 95, 20), (65, 105, 26)])
+    check_pixel_offset: list = dataclasses.field(default_factory=lambda: [[20, 20]])
+
+
+@dataclasses.dataclass
 class other:
     use_dim: bool
     rounds: int
@@ -50,6 +57,7 @@ class mode:
 
 settings = tomllib.loads(SETTINGS_PATH.read_text("utf-8"))
 mission_settings = mission(**settings.pop("mission"))
+mission_color_settings = mission_color(**settings.pop("mission_color"))
 other_settings = other(**settings.pop(f"other"))
 mode = mode(**settings.pop("mode"))
 leave_detect = leave_detect(**settings.pop("leave_detect"))

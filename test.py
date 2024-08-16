@@ -6,7 +6,6 @@ from PIL import ImageGrab
 
 
 def show(fp):
-
     # 读取图像
     # image = cv2.imread(fp)
     screenshot = ImageGrab.grab(bbox=[10, 10, 1306, 769])
@@ -19,7 +18,7 @@ def show(fp):
 
     # 使用Hough Circle Transform检测圆形
     circles = cv2.HoughCircles(
-        gray_blurred, cv2.HOUGH_GRADIENT, dp=1, minDist=30, param1=50, param2=15, minRadius=13, maxRadius=14
+        gray_blurred, cv2.HOUGH_GRADIENT, dp=1, minDist=30, param1=50, param2=13, minRadius=13, maxRadius=14
     )
 
     if circles is not None:
@@ -28,9 +27,15 @@ def show(fp):
         for i in circles[0, :]:
             # 绘制圆形边界
             print("radius", i[2])
-            cv2.circle(image, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            print("center", i[0], i[1])
+            x, y = i[0], i[1]
+            cv2.circle(image, (i[0], i[1]), i[2], (0, 255, 0), 1)
             # 绘制圆心
-            cv2.circle(image, (i[0], i[1]), 2, (0, 0, 255), 3)
+            cv2.circle(image, (i[0], i[1]), 2, (0, 0, 255), 1)
+            x_diff = 5
+            print(f"pixel_value {screenshot.getpixel((x+20, y + 20))}")
+            print(f"x-{x_diff} pixel_value {screenshot.getpixel((x-x_diff, y))}")
+            print(f"x+{x_diff} pixel_value {screenshot.getpixel((x+x_diff, y))}")
 
     # 显示结果
     cv2.imshow("Detected Circles", image)

@@ -118,6 +118,11 @@ def esc_once():
     time.sleep(1)
 
 
+def enter():
+    pydirectinput.press("enter")
+    time.sleep(1)
+
+
 def convert_coordinates(original_coordinates):
     # 使用示例
     original_resolution = [1920, 1080]
@@ -157,7 +162,7 @@ def convert_coordinates(original_coordinates):
 # print(used_action)
 
 # d2_operation.active_window()
-# do_actions("PM占点")
+# do_actions("选角色")
 
 
 # # time.sleep(1)

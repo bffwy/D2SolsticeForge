@@ -225,5 +225,5 @@ def get_screen_shot(bbox=None):
 # import time
 # time.sleep(2)
 
-# bbox = [452, 331, 637, 386]
+# bbox = [349, 339, 433, 423]
 # test_get_image(bbox)
