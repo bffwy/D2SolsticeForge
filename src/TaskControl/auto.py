@@ -57,6 +57,7 @@ class AutoBridge(object):
             raise Exception
 
     def real_start(self, _):
+        self.status_control.start()
         if mode.current_mod == 1:
             self.all_auto_mode()
         elif mode.current_mod == 2:
@@ -101,7 +102,6 @@ class AutoBridge(object):
         return int((999 - current_leave) // 5)
 
     def all_auto_mode(self):
-        self.status_control.start()
         current_leave = get_leaves_item_quantity()
         self.log(f"检测到银叶数量 {current_leave}", emit=True)
         if current_leave > other_settings.start_use_leave:

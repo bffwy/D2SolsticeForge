@@ -75,6 +75,7 @@ class AutoPowerMissionTask(object):
         self.data = Data()
 
     def init_tasks(self):
+        self.check_tasks = []
         self.check_player_die_check = self.init_task(PlayerDieCheckTask, self.on_player_die)
         self.check_reborn_task = self.init_task(CheckRebornTask, self.on_player_reborn)
         self.check_mission_finish = self.init_task(CheckMissionFinishTask, self.on_mission_finish)
@@ -85,6 +86,7 @@ class AutoPowerMissionTask(object):
         task = task_class(self.event_queue)
         if event_handler:
             task.register_event(event_handler)
+        self.check_tasks.append(task)
         return task
 
     def start(self, current_leave):
@@ -229,10 +231,10 @@ class AutoPowerMissionTask(object):
     def stop_all_checks(self, is_die=False):
         # 清空消息队列
         self.log(f"stop_all_checks")
-        self.check_player_die_check.stop_check()
-        self.check_reborn_task.stop_check()
-        if not is_die:
-            self.check_mission_finish.stop_check()
+        for task in self.check_tasks:
+            if isinstance(task, CheckMissionFinishTask) and is_die:
+                continue
+            task.stop_check()
         self.cancel_main()
         self.event_queue.queue.clear()
         # TimerManager.clear_timers()

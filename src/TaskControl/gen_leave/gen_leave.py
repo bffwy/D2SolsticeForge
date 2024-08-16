@@ -53,6 +53,7 @@ class GenLeaveTask(object):
         self.data = Data()
 
     def init_tasks(self):
+        self.check_tasks = []
         self.check_enter_map = self.init_task(EnterPMTask, self.on_enter_map)
         self.check_finish_task = self.init_task(CheckFinishPM, self.on_finish_pm)
         self.check_back_to_orbit = self.init_task(CheckBackToOrbit, self.on_back_to_orbit)
@@ -61,6 +62,7 @@ class GenLeaveTask(object):
         task = task_class(self.event_queue)
         if event_handler:
             task.register_event(event_handler)
+        self.check_tasks.append(task)
         return task
 
     def start(self, rounds):
@@ -142,9 +144,8 @@ class GenLeaveTask(object):
 
     def stop_all_checks(self):
         self.log(f"stop_all_checks")
-        self.check_enter_map.stop_check()
-        self.check_finish_task.stop_check()
-        self.check_back_to_orbit.stop_check()
+        for task in self.check_tasks:
+            task.stop_check()
         self.cancel_main()
         self.event_queue.queue.clear()
         # TimerManager.clear_timers()
