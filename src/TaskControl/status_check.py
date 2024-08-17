@@ -8,7 +8,7 @@ from TaskControl.ActControl import do_actions, esc_once, enter
 check_image = {
     "in_orbit": [50, 724, 106, 748],
     "error_page": [343, 312, 422, 390],
-    "leave_page": [339, 329, 423, 413],
+    "leave_page": [340, 295, 425, 385],
     "first_page": [400, 332, 903, 476],
     "login_page": [50, 720, 147, 747],
 }
@@ -48,7 +48,7 @@ class StatusControl(object):
     def adjust_tick_interval(self):
         if self.check_in_orbit:
             # 加速
-            self.interval = 3
+            self.interval = 10
         else:
             self.interval = 15
 
@@ -93,6 +93,7 @@ class StatusControl(object):
         for status, handler in self.status_handlers.items():
             if status in check_image:
                 ret = get_similarity(f"status/{status}", check_image[status], debug=False)
+                # print(f"{status} 相似度: {ret:.2f}")
                 if ret >= 0.8:
                     handler()  # 调用相应的处理函数
                     break

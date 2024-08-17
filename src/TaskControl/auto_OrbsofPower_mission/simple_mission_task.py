@@ -70,11 +70,12 @@ class SimpleMissionTask(object):
 
     def start(self, current_leave=None):
         self.log(f"开始刷能量球", emit=True)
-        get_mission()
         if current_leave:
             self.current_leave = current_leave
         else:
             self.current_leave = get_leaves_item_quantity()
+        use_leave = get_mission()
+        self.current_leave -= use_leave
 
         self.event_queue.put((self.start_task, None))
         try:
@@ -136,7 +137,7 @@ class SimpleMissionTask(object):
         while times > 0:
             times -= 1
             do_actions("kf技能循环")
-            await asyncio.sleep(5)
+            await asyncio.sleep(0.5)
 
     def on_mission_finish(self, event: Event):
         data = event.data
@@ -154,6 +155,7 @@ class SimpleMissionTask(object):
         # 清空消息队列
         self.log(f"stop_all_checks")
         self.cancel_main()
+        self.check_mission_finish.stop_check()
         self.event_queue.queue.clear()
         # TimerManager.clear_timers()
 

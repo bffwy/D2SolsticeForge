@@ -12,7 +12,6 @@ import cv2
 import time
 import pydirectinput
 import numpy as np
-from screenshot import get_screen_shot
 from collections import defaultdict
 from TaskControl.ActControl import do_actions
 from settings import mission_settings, mission_color_settings
@@ -155,8 +154,8 @@ def re_get_page_mission(page_index, force_refresh=False):
     presence_gray_mission = False  # 检测到是灰绿悬赏
 
     current_refresh_time = refresh_time
-    if not mission_settings.get_white_mission:
-        current_refresh_time = min(1, current_refresh_time)
+    if not mission_settings.get_white_mission and current_refresh_time < 1:
+        current_refresh_time = 1
 
     max_time = 100
     while True and max_time > 0:
@@ -206,7 +205,7 @@ def re_get_page_mission(page_index, force_refresh=False):
 
 
 def _get_mission():
-    do_actions("打开至日熔炉界面")
+    do_actions(mission_settings.open_mission_act)
     time.sleep(2)
     use_leave, get_mission_num, presence_gray_mission = re_get_page_mission(0)
     time.sleep(1)

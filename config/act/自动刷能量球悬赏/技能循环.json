@@ -4,7 +4,7 @@
             "注释": "按住 w 往前跑",
             "type": "key",
             "name": "向后移动",
-            "duration": 0.3,
+            "duration": 1.2,
             "blocking": false
         },
         {
@@ -14,7 +14,7 @@
         },
         {
             "type": "wait",
-            "duration": 1,
+            "duration": 1.3,
             "blocking": true
         }
     ]

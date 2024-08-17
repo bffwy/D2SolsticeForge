@@ -30,6 +30,8 @@ not_valid_items = {}
 
 profile_item_quantity = {}
 
+current_thread = None
+
 
 def get_access_token_first():
     """第一次获取 玩家token"""
@@ -262,20 +264,6 @@ def trans_item_to_vault(item, character_id):
     print(f"TransferItem: {item_id},,ret.status_code={r.status_code}")
 
 
-def perk_check(item_data):
-    perks = item_data["perks"]["data"]["perks"]
-    tmp_perk_require = {
-        586671776: [[4215153072, 319132642], [1170256448]],
-        4169225313: [
-            [
-                247254824,
-            ]
-        ],
-    }
-
-    pass
-
-
 def check_before_move(item):
     # 先检查护甲属性 是否满足要求
     # 总和 65 以上 and 力量 == 2
@@ -299,7 +287,6 @@ def check_before_move(item):
             # 武器 include 判断
             return False
         return True
-
     item_data = get_item_common_data(item_id)
     stats_data = item_data["stats"]["data"]["stats"]
     count = 0
@@ -316,61 +303,50 @@ def check_before_move(item):
         and hash_value_mal[str(CONST.StatHush.Mobility)] == 2
         and hash_value_mal[str(CONST.StatHush.Strength)] == 2
     )
-
     return count >= config.dim_settings.armor_sum_required
 
-    if item_data:
-        try:
-            stats_data = item_data["stats"]["data"]["stats"]
-            count = 0
-            hash_value_mal = {}
-            for statHush, hash_value in stats_data.items():
-                value = hash_value["value"]
-                hash_value_mal[statHush] = value
-                count += int(value)
-            # logger.info(f"item_stat: {hash_value_mal}")
-            # if hash_value_mal[str(CONST.StatHush.Resilience)] + hash_value_mal[str(CONST.StatHush.Mobility)] == 32:
-            #     return True
-            # if any(value == 30 for value in hash_value.values()):
-            #     return True
-            # return count >= 65 and hash_value_mal[str(CONST.StatHush.Strength)] == 2
-            return count >= config.dim_settings.armor_sum_required
 
-        except Exception as e:
-            pass
+class WorkerThread(threading.Thread):
+    def __init__(self):
+        super(WorkerThread, self).__init__()
+        self.stop_event = threading.Event()
 
-    return True
+    def run(self):
+        check_and_refresh_token()
+        get_characters()
+        get_postmaster_class = set(config.dim_settings.get_postmaster_class)
+        for class_name in get_postmaster_class:
+            class_type = CONST.ClassTypeMap.get(class_name)
+            if class_type in characters:
+                character = characters[class_type]
+                character_id = character["characterId"]
+                items = get_item_in_postmaster(character_id)
+                logger.info(f"get_item_in_postmaster: character_id={character_id},,num={len(items)}")
+                if not items:
+                    return
+                for item in items:
+                    if self.stop_event.is_set():
+                        return
+                    dim_pull_item_from_postmaster(item, character_id)
+                    time.sleep(3)
 
-
-def real_move_items_from_postmaster_to_vault():
-
-    def move_item_postmaster_for_character(character_id):
-        items = get_item_in_postmaster(character_id)
-        logger.info(f"get_item_in_postmaster: character_id={character_id},,num={len(items)}")
-        if not items:
-            return
-        for item in items:
-            dim_pull_item_from_postmaster(item, character_id)
-
-            # try:
-            #     dim_pull_item_from_postmaster(item, character_id)
-            # except Exception as e:
-            #     continue
-
-    check_and_refresh_token()
-    get_characters()
-    get_postmaster_class = set(config.dim_settings.get_postmaster_class)
-    for class_name in get_postmaster_class:
-        class_type = CONST.ClassTypeMap.get(class_name)
-        if class_type in characters:
-            character = characters[class_type]
-            character_id = character["characterId"]
-            move_item_postmaster_for_character(character_id)
+    def stop(self):
+        self.stop_event.set()
 
 
 def move_items_from_postmaster_to_vault():
-    t = threading.Thread(target=real_move_items_from_postmaster_to_vault)
-    t.start()
+    global current_thread
+    if current_thread and current_thread.is_alive():
+        return
+    current_thread = WorkerThread()
+    current_thread.start()
+
+
+def stop_thread():
+    global current_thread
+    if current_thread:
+        current_thread.stop()
+        current_thread = None
 
 
 def get_item_quantity(item_hash):

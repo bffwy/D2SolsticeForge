@@ -144,9 +144,12 @@ def get_similarity(path, bbox, debug):
         time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
         file_name = f"{path}_{time_str}_相似度{ret:.2f}.png"
         logger.debug(f"Debug 保存图片: {file_name}")
+        real_path = f"./debug/{file_name}"
+        folder = os.path.dirname(real_path)
+        os.makedirs(folder, exist_ok=True)
         if not os.path.exists("./debug"):
             os.makedirs("./debug")
-        grabbed_image.save(f"./debug/{file_name}")
+        grabbed_image.save(real_path)
     logger.debug(f"check_path: {path} 相似度: {ret:.2f}")
     return ret
 
@@ -225,5 +228,7 @@ def get_screen_shot(bbox=None):
 # import time
 # time.sleep(2)
 
-# bbox = [349, 339, 433, 423]
+# bbox = [350, 305, 435, 395]
 # test_get_image(bbox)
+
+# print(get_similarity("status/leave_page", [340, 295, 425, 385], True))

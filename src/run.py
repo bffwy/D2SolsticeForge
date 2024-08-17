@@ -7,6 +7,7 @@ from TaskControl.Base.CommonLogger import my_logger
 from TaskControl.Base.TimerManager import TimerManager
 from my_window.MainWindow import log_window
 from utils import path_helper, d2_operation
+from D2API.api import stop_thread
 
 
 if __name__ == "__main__":
@@ -31,6 +32,7 @@ if __name__ == "__main__":
         my_logger.info("程序已停止，请检查日志文件")
         # _ = input("按回车键退出...")
     finally:
+        stop_thread()
         d2_operation.free_all()
         log_window.close_window()
         TimerManager.clear_timers()

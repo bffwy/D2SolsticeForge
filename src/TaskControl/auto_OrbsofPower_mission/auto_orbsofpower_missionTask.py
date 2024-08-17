@@ -93,11 +93,12 @@ class AutoPowerMissionTask(object):
         self.log(f"开始刷能量球", emit=True)
         self.goal_finish = False
         self.in_map = False
-        get_mission()
         if current_leave:
             self.current_leave = current_leave
         else:
             self.current_leave = get_leaves_item_quantity()
+        use_leave = get_mission()
+        self.current_leave -= use_leave
 
         self.event_queue.put((self.start_task, None))
         try:

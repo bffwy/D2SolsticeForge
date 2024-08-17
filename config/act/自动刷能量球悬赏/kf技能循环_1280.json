@@ -1,21 +1,21 @@
 {
     "actions": [
         {
-            "注释": "按住 w 往前跑",
-            "type": "key",
-            "name": "向后移动",
-            "duration": 1,
-            "blocking": false
-        },
-        {
             "type": "wait",
-            "duration": 1,
+            "duration": 1.5,
             "blocking": true
         },
         {
-            "注释": "未充能近战",
+            "注释": "按住 w 往前跑",
+            "type": "key",
+            "name": "向后移动",
+            "duration": 1.5,
+            "blocking": true
+        },
+        {
+            "注释": "职业技能",
             "type": "press",
-            "key": "未充能近战"
+            "key": "职业技能"
         }
     ]
 }

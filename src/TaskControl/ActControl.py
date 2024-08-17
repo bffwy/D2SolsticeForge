@@ -56,13 +56,12 @@ def execute_action(action):
             d2_operation.key_down_chn(action["name"])
         else:
             pydirectinput.keyDown(action["name"])
-
         time.sleep(action["duration"])
-
         if is_in_bind_key_chn:
             d2_operation.key_up_chn(action["name"])
         else:
             pydirectinput.keyUp(action["name"])
+
     elif action["type"] == "mouse_move":
         if action.get("relative"):
             pydirectinput.move(*action["relative"], relative=True)
@@ -92,12 +91,59 @@ def execute_action(action):
             pydirectinput.press(action["key"])
 
 
+# def _actions(config):
+#     for action in config["actions"]:
+#         if action.get("blocking", False):
+#             execute_action(action)
+#         else:
+#             threading.Thread(target=execute_action, args=(action,)).start()
+
+
+class ActionThread(threading.Thread):
+    def __init__(self, action):
+        super(ActionThread, self).__init__()
+        self.action = action
+        self.stop_event = threading.Event()
+
+    def run(self):
+        if not self.stop_event.is_set():
+            execute_action(self.action)
+
+    def stop(self):
+        self.stop_event.set()
+
+
+class ThreadManager:
+    def __init__(self):
+        self.current_threads = []
+
+    def add_thread(self, thread):
+        self.current_threads.append(thread)
+
+    def stop_all(self):
+        for thread in self.current_threads:
+            thread.stop()
+        self.current_threads = []
+
+
+thread_manager = ThreadManager()
+
+
 def _actions(config):
+    threads = []
     for action in config["actions"]:
         if action.get("blocking", False):
             execute_action(action)
         else:
-            threading.Thread(target=execute_action, args=(action,)).start()
+            thread = ActionThread(action)
+            thread.start()
+            threads.append(thread)
+            thread_manager.add_thread(thread)
+    return threads
+
+
+def stop_all():
+    thread_manager.stop_all()
 
 
 def do_actions(action_name):
@@ -162,7 +208,7 @@ def convert_coordinates(original_coordinates):
 # print(used_action)
 
 # d2_operation.active_window()
-# do_actions("选角色")
+# do_actions("定位到有银叶数量界面任务2")
 
 
 # # time.sleep(1)

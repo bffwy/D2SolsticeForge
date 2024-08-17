@@ -20,6 +20,7 @@ class mission:
     y_diff: int
     perfect_like: int
     get_white_mission: bool
+    open_mission_act: str
 
 
 @dataclasses.dataclass

@@ -2,7 +2,7 @@ import asyncio
 from queue import Queue
 from TaskControl.Base.CommonLogger import my_logger
 from my_window.MainWindow import log_window
-from TaskControl.ActControl import do_actions
+from TaskControl.ActControl import do_actions, stop_all
 from TaskControl.auto_OrbsofPower_mission.auto_orbsofpower_missionTask import AutoPowerMissionTask
 from TaskControl.gen_leave.gen_leave import GenLeaveTask
 from TaskControl.auto_OrbsofPower_mission.simple_mission_task import SimpleMissionTask
@@ -12,7 +12,6 @@ from TaskControl.auto_OrbsofPower_mission.get_bounty_mission import get_mission
 from settings import other_settings, mode
 from utils import path_helper, d2_operation
 from TaskControl.status_check import StatusControl
-
 
 pm_round = other_settings.rounds
 
@@ -128,8 +127,10 @@ class AutoBridge(object):
         self.auto_leave_task.start(self.get_round(current_leave))
 
     def stop(self):
+        stop_all()
         self.use_leave_task.stop_all_checks()
         self.auto_leave_task.stop_all_checks()
+        self.simple_mission_task.stop_all_checks()
 
     def log(self, msg, emit=False):
         my_logger.info(msg)
